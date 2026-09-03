@@ -1,0 +1,14 @@
+---
+description: Keep Digital Legacy isolated from other products and remotes
+alwaysApply: true
+---
+
+# Digital Legacy isolation
+
+This folder is the only workspace for Digital Legacy.
+
+- Path: `C:\Cursor\DigitalLegacy`
+- GitHub: `https://github.com/barbarosson/digital-legacy`
+- Do not edit WinAirPlay (`C:\Cursor\WinAirPlay`) or PixReady (`C:\Cursor\PixReady`) from this chat
+- Do not commit Digital Legacy into `github.com/barbarosson/project` or `github.com/barbarosson/pixready`
+- The copy under `...\project\dijital-miras` is obsolete. If that path is open, stop and use File > Open Folder > `C:\Cursor\DigitalLegacy`

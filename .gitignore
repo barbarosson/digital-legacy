@@ -30,16 +30,16 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (never commit secrets; example is allowed)
 .env*
+!.env.example
 
 # vercel
 .vercel
 
 # local database
 /data/
-/data/backups/
-/data/videos/
+*.db
 
 # electron
 /dist-electron/
