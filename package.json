@@ -1,0 +1,80 @@
+{
+  "name": "dijital-miras",
+  "version": "0.1.0",
+  "description": "Personal digital legacy planner",
+  "author": "Digital Legacy",
+  "private": true,
+  "main": "electron/main.mjs",
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start -p 3002",
+    "lint": "eslint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node scripts/migrate.mjs",
+    "db:backup": "node scripts/backup.mjs",
+    "db:studio": "drizzle-kit studio",
+    "electron:dev": "node scripts/electron-dev.mjs",
+    "electron:pack": "npm run build && node scripts/prepare-electron.mjs",
+    "electron:build": "npm run electron:pack && node scripts/electron-build.mjs",
+    "rebuild:node": "npm rebuild better-sqlite3"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "better-sqlite3": "^12.11.1",
+    "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.2",
+    "jszip": "^3.10.1",
+    "lucide-react": "^1.21.0",
+    "next": "16.2.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.7.2",
+    "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
+    "electron": "^35.1.5",
+    "electron-builder": "^25.1.8",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.9",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "build": {
+    "appId": "com.digitallegacy.app",
+    "productName": "Digital Legacy",
+    "asar": true,
+    "npmRebuild": false,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "dist-electron/app",
+        "to": "app"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Digital Legacy"
+    }
+  }
+}
