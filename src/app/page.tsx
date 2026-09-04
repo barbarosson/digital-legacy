@@ -46,11 +46,19 @@ export default function HomePage() {
             {t("nav.brand")}
           </span>
         </div>
-        <Link href="/giris">
-          <Button variant="secondary" size="sm">
-            {t("landing.cta")}
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/privacy"
+            className="text-sm text-slate-400 transition hover:text-slate-200"
+          >
+            {t("settings.privacyTitle")}
+          </Link>
+          <Link href="/giris">
+            <Button variant="secondary" size="sm">
+              {t("landing.cta")}
+            </Button>
+          </Link>
+        </div>
       </header>
 
       <main className="relative mx-auto max-w-6xl px-6 pb-24 pt-10">

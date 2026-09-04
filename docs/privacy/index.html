@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital Legacy — Privacy Policy</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      line-height: 1.6;
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+      color: #e2e8f0;
+      background: #0f172a;
+    }
+    h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+    h2 { font-size: 1.15rem; margin-top: 2rem; color: #fbbf24; }
+    p, li { color: #cbd5e1; }
+    .meta { color: #94a3b8; font-size: 0.9rem; margin-bottom: 2rem; }
+    a { color: #fbbf24; }
+  </style>
+</head>
+<body>
+  <h1>Digital Legacy — Privacy Policy</h1>
+  <p class="meta">Last updated: 3 September 2026</p>
+
+  <p>Digital Legacy is a Windows desktop app for planning a personal digital estate: assets, heirs, messages, and optional video diary entries.</p>
+
+  <h2>Data we store on your computer</h2>
+  <p>The app stores data locally on the device where it is installed, typically under your Windows user profile (<code>%APPDATA%</code>). This includes:</p>
+  <ul>
+    <li>A PIN hash used to unlock the app</li>
+    <li>Digital asset notes (accounts, documents, instructions, optional password notes)</li>
+    <li>Heir and group details</li>
+    <li>Messages intended for delivery</li>
+    <li>Calendar memories, videos, and thumbnails</li>
+    <li>Backup copies you create</li>
+    <li>Appearance and reminder preferences</li>
+  </ul>
+  <p>Sensitive fields are encrypted with AES-256-GCM. The PIN is required to decrypt them. If you forget the PIN, the encrypted data cannot be recovered.</p>
+  <p>Videos and the SQLite database never leave your computer unless you export a backup, use GDPR export, or later enable optional Community features.</p>
+
+  <h2>Camera and microphone</h2>
+  <p>The in-app camera records daily videos only when you start a recording. Camera and microphone access are used for that purpose. Recordings stay on this device.</p>
+
+  <h2>Notifications</h2>
+  <p>If you enable the daily reminder, the desktop app may show a Windows notification at the time you choose. Reminders run only while the app is open.</p>
+
+  <h2>Network</h2>
+  <p>The core vault does not require an internet connection.</p>
+  <p>Optional Community and Chat (disabled in the Store v1 build unless you turn them on) use a third-party backend (Supabase) for accounts, posts, and messages between connected users. If you enable that feature, the privacy terms of that service also apply, and you should review what you share with other users.</p>
+
+  <h2>Your controls</h2>
+  <p>You can:</p>
+  <ul>
+    <li>Change or remove local records inside the app</li>
+    <li>Download a database backup</li>
+    <li>Export a decrypted ZIP archive of your data (keep it in a safe place)</li>
+    <li>Uninstall the app; local data under <code>%APPDATA%</code> may remain until you delete it</li>
+  </ul>
+
+  <h2>Children</h2>
+  <p>Digital Legacy is not directed at children under 13.</p>
+
+  <h2>Contact</h2>
+  <p>Support contact will be published on the Microsoft Store listing when the app is submitted. Until then, use the <a href="https://github.com/barbarosson/digital-legacy">GitHub repository</a> associated with this product.</p>
+</body>
+</html>

@@ -17,12 +17,14 @@
 /.next/
 /out/
 
-# production
-/build
-
 # misc
 .DS_Store
 *.pem
+
+# demo / local screenshot data (not for release)
+/data-demo-screenshots/
+
+# Keep electron-builder icons in /build (icon.ico, Store tiles) tracked in git
 
 # debug
 npm-debug.log*

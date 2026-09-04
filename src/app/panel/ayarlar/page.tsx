@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bell, Moon, Palette, Sun } from "lucide-react";
+import { Bell, Moon, Palette, Shield, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -248,6 +248,27 @@ export default function AyarlarPage() {
       <p className="text-xs leading-relaxed text-slate-600">
         {t("settings.reminderNote")}
       </p>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-amber-400" />
+            <h2 className="text-lg font-semibold text-foreground">
+              {t("settings.privacyTitle")}
+            </h2>
+          </div>
+          <p className="mt-2 text-sm text-slate-500">
+            {t("settings.privacyDesc")}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <a href="/privacy">
+            <Button type="button" variant="secondary">
+              {t("settings.privacyOpen")}
+            </Button>
+          </a>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
   Shield,
   Users,
 } from "lucide-react";
+import { isCommunityEnabled } from "@/lib/features";
 import { useT } from "@/lib/i18n/provider";
 import { cn } from "@/lib/utils";
 
@@ -30,8 +31,8 @@ const navItems = [
   { href: "/panel/arama", key: "search", icon: Search },
   { href: "/panel/mesajlar", key: "messages", icon: Mail },
   { href: "/panel/teslim", key: "delivery", icon: Send },
-  { href: "/panel/topluluk", key: "community", icon: Globe },
-  { href: "/panel/sohbet", key: "chat", icon: MessageCircle },
+  { href: "/panel/topluluk", key: "community", icon: Globe, community: true },
+  { href: "/panel/sohbet", key: "chat", icon: MessageCircle, community: true },
   { href: "/panel/ayarlar", key: "settings", icon: Settings },
   { href: "/panel/yedekleme", key: "backup", icon: HardDriveDownload },
 ];
@@ -61,7 +62,9 @@ export function Sidebar() {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 p-4">
-        {navItems.map(({ href, key, icon: Icon }) => {
+        {navItems
+          .filter((item) => !item.community || isCommunityEnabled())
+          .map(({ href, key, icon: Icon }) => {
           const active =
             href === "/panel"
               ? pathname === href

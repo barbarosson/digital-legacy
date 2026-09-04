@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Notification, shell } from "electron";
+import { app, BrowserWindow, Notification, shell, dialog } from "electron";
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import net from "node:net";
@@ -123,6 +123,18 @@ async function resolvePort() {
   return startProductionServer();
 }
 
+function resolveIcon() {
+  // Dev: icon is in <repo>/public/  Production: copied into extraResources/app/public/
+  const candidates = [
+    path.join(projectRoot, "public", "icon-256.png"),
+    path.join(__dirname, "..", "public", "icon-256.png"),
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return c;
+  }
+  return undefined;
+}
+
 function createWindow(port) {
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -130,6 +142,7 @@ function createWindow(port) {
     minWidth: 960,
     minHeight: 640,
     title: "Digital Legacy",
+    icon: resolveIcon(),
     autoHideMenuBar: true,
     webPreferences: {
       contextIsolation: true,
@@ -211,7 +224,11 @@ if (!gotLock) {
       createWindow(serverPort);
       startReminderScheduler();
     } catch (error) {
-      console.error(error);
+      const message = error instanceof Error ? error.message : String(error);
+      dialog.showErrorBox(
+        "Digital Legacy",
+        `The app could not start.\n\n${message}`,
+      );
       app.quit();
     }
   });

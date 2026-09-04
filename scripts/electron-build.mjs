@@ -16,7 +16,7 @@ execSync("npx electron-builder --win", {
 
 // electron-builder kök node_modules'u Electron için derleyebilir;
 // Next.js dev sunucusu sistem Node sürümünü kullanır — geri yükle.
-console.log("better-sqlite3 sistem Node için yeniden derleniyor...");
+console.log("Rebuilding better-sqlite3 for system Node...");
 execSync("npm rebuild better-sqlite3", {
   cwd: root,
   stdio: "inherit",

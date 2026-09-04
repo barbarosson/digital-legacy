@@ -15,7 +15,7 @@ function copyDir(source, destination) {
 }
 
 if (!fs.existsSync(path.join(standaloneDir, "server.js"))) {
-  console.error('Önce "npm run build" çalıştırın (.next/standalone gerekli).');
+  console.error('Run "npm run build" first (.next/standalone is required).');
   process.exit(1);
 }
 
@@ -29,16 +29,17 @@ if (fs.existsSync(publicDir)) {
 }
 
 copyDir(path.join(root, "drizzle"), path.join(outputDir, "drizzle"));
+copyDir(path.join(root, "docs"), path.join(outputDir, "docs"));
 
 const electronVersion = require("electron/package.json").version;
 const sqliteModule = path.join(outputDir, "node_modules", "better-sqlite3");
 
 if (fs.existsSync(sqliteModule)) {
-  console.log(`better-sqlite3 Electron ${electronVersion} için derleniyor...`);
+  console.log(`Rebuilding better-sqlite3 for Electron ${electronVersion}...`);
   execSync(
     `npx electron-rebuild -f -w better-sqlite3 --version ${electronVersion}`,
     { cwd: outputDir, stdio: "inherit", shell: true },
   );
 }
 
-console.log("Electron paketi hazır:", outputDir);
+console.log("Electron package ready:", outputDir);

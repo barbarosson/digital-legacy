@@ -4,6 +4,8 @@ Personal digital legacy planner for Windows. Manage digital assets, heirs, and m
 
 This repository is **standalone**. Do not mix it with the old monorepo, WinAirPlay, or PixReady.
 
+Phased Store plan: [docs/STORE.md](docs/STORE.md). Privacy: [docs/PRIVACY_POLICY.md](docs/PRIVACY_POLICY.md).
+
 ## Folder
 
 `C:\Cursor\DigitalLegacy`

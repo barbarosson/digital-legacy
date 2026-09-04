@@ -66,6 +66,10 @@ export const dictionaries: Record<Language, Dict> = {
       reminderSaved: "Hatırlatıcı ayarları kaydedildi.",
       reminderNote:
         "Hatırlatıcı bildirimleri yalnızca masaüstü uygulaması (Electron) çalışırken gösterilir. Tarayıcıda kullanırken bu özellik devre dışıdır.",
+      privacyTitle: "Gizlilik",
+      privacyDesc:
+        "Uygulama verileri bu bilgisayarda saklanır. Mağaza gönderimi için gizlilik metni docs/PRIVACY_POLICY.md dosyasındadır.",
+      privacyOpen: "Gizlilik politikasını aç",
       accents: {
         amber: "Kehribar",
         blue: "Mavi",
@@ -532,6 +536,10 @@ export const dictionaries: Record<Language, Dict> = {
       reminderSaved: "Reminder settings saved.",
       reminderNote:
         "Reminder notifications are only shown while the desktop app (Electron) is running. This feature is disabled in the browser.",
+      privacyTitle: "Privacy",
+      privacyDesc:
+        "App data stays on this computer. The Store privacy text is in docs/PRIVACY_POLICY.md.",
+      privacyOpen: "Open privacy policy",
       accents: {
         amber: "Amber",
         blue: "Blue",
