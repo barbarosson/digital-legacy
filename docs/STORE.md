@@ -27,11 +27,12 @@ Already in the repo:
 - NSIS desktop build: `npm run electron:build`
 - MSIX script waits for Partner Center identity: `npm run electron:msix`
 
+Public privacy URL (live):
+
+- https://barbarosson.github.io/digital-legacy/privacy/
+
 Still needed before upload:
 
-- **Public HTTPS privacy URL** — enable GitHub Pages (Settings → Pages → Deploy from branch `main` / folder `/docs`). Target URL:
-  `https://barbarosson.github.io/digital-legacy/privacy/`
-  (Private repos need GitHub Pro for Pages, or make the repo public / host elsewhere.)
 - Partner Center developer account + app identity (Phase 3)
 
 ## Phase 3 — When the Store account arrives

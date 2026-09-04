@@ -4,7 +4,7 @@ Personal digital legacy planner for Windows. Manage digital assets, heirs, and m
 
 This repository is **standalone**. Do not mix it with the old monorepo, WinAirPlay, or PixReady.
 
-Phased Store plan: [docs/STORE.md](docs/STORE.md). Privacy: [docs/PRIVACY_POLICY.md](docs/PRIVACY_POLICY.md).
+Phased Store plan: [docs/STORE.md](docs/STORE.md). Privacy: [docs/PRIVACY_POLICY.md](docs/PRIVACY_POLICY.md) · public URL: https://barbarosson.github.io/digital-legacy/privacy/
 
 ## Folder
 
@@ -37,7 +37,8 @@ Output is in `release/`. Installed data lives under `%APPDATA%\digital-legacy\da
 
 ## GitHub
 
-- Repo: https://github.com/barbarosson/digital-legacy
+- Repo (public): https://github.com/barbarosson/digital-legacy
+- Privacy (GitHub Pages): https://barbarosson.github.io/digital-legacy/privacy/
 - Do **not** commit this app into https://github.com/barbarosson/project or pixready.
 
 ## Features
