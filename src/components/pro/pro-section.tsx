@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ProBadge, ProGate } from "@/components/pro/pro-gate";
 import { CloudSection } from "@/components/pro/cloud-section";
 import { useT } from "@/lib/i18n/provider";
+import { getStoreBridge } from "@/lib/iap/bridge";
 import { formatDate } from "@/lib/utils";
 
 type Entitlement = {
@@ -133,6 +134,22 @@ export function ProSection() {
     setUnlocking(true);
     setUnlockError("");
     setUnlockSuccess("");
+
+    const bridge = getStoreBridge();
+    if (bridge) {
+      const purchase = await bridge.requestProPurchase();
+      if (!purchase.ok && purchase.reason !== "not_wired") {
+        setUnlocking(false);
+        setUnlockError(purchase.message ?? t("pro.storeRestoreFailed"));
+        return;
+      }
+      const status = await bridge.getLicenseStatus();
+      if (status.licensed) {
+        // Main set ELECTRON_STORE_PRO_LICENSE for the Next child process only
+        // when real StoreContext lands; API path still applies the unlock.
+      }
+    }
+
     const res = await fetch("/api/entitlements", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },

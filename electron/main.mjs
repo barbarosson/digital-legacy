@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Notification, shell, dialog } from "electron";
+import { app, BrowserWindow, Notification, shell, dialog, ipcMain } from "electron";
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import net from "node:net";
@@ -7,6 +7,9 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = Boolean(process.env.ELECTRON_DEV) || !app.isPackaged;
+
+const STORE_PRO_PRODUCT_ID =
+  process.env.STORE_PRO_PRODUCT_ID?.trim() || "digital_legacy_pro";
 
 let reminderInterval = null;
 let lastReminderShownOn = null;
@@ -161,6 +164,7 @@ function createWindow(port) {
     icon: resolveIcon(),
     autoHideMenuBar: true,
     webPreferences: {
+      preload: path.join(__dirname, "preload.mjs"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
@@ -179,6 +183,40 @@ function createWindow(port) {
 
   mainWindow.on("closed", () => {
     mainWindow = null;
+  });
+}
+
+function registerStoreIpc() {
+  ipcMain.handle("store:get-license-status", async () => {
+    const windowsStore = Boolean(process.windowsStore);
+    const storeBuild =
+      windowsStore ||
+      process.env.DIGITAL_LEGACY_STORE_BUILD === "true" ||
+      process.env.DIGITAL_LEGACY_STORE_BUILD === "1";
+    // Partner Center: replace with Windows.Services.Store StoreContext
+    // LicenseInformation / GetAppLicenseAsync for STORE_PRO_PRODUCT_ID.
+    const licensed = process.env.ELECTRON_STORE_PRO_LICENSE === "true";
+    return {
+      productId: STORE_PRO_PRODUCT_ID,
+      windowsStore,
+      storeBuild,
+      licensed,
+      wired: false,
+      note: licensed
+        ? "Dev override ELECTRON_STORE_PRO_LICENSE is set."
+        : "StoreContext IAP is not wired yet. Set Partner Center add-on then implement GetAppLicenseAsync in main.",
+    };
+  });
+
+  ipcMain.handle("store:request-pro-purchase", async () => {
+    // Future: StoreContext.requestPurchaseAsync(STORE_PRO_PRODUCT_ID)
+    return {
+      ok: false,
+      reason: "not_wired",
+      productId: STORE_PRO_PRODUCT_ID,
+      message:
+        "Microsoft Store purchase UI is not connected yet. Complete Partner Center IAP, then wire StoreContext in electron/main.mjs.",
+    };
   });
 }
 
@@ -285,6 +323,7 @@ if (!gotLock) {
 
   app.whenReady().then(async () => {
     ensureDataDirs();
+    registerStoreIpc();
     try {
       serverPort = await resolvePort();
       createWindow(serverPort);

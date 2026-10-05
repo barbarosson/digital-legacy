@@ -60,11 +60,20 @@ STORE_PUBLISHER=CN=...
 STORE_PUBLISHER_DISPLAY=...
 ```
 
+Validate: `npm run store:check-identity`
+
 4. `npm run electron:msix`
 5. Sideload the `.appx` / `.msix` on a clean Windows 10/11 PC with no Node installed.
 6. Run the Windows App Certification Kit.
 7. Upload the package. Paste the privacy URL. Age rating: Productivity. Notes for certification: full-trust desktop app because it runs a local Node server, SQLite, camera, and notifications. Community is off.
-8. Screenshots must show the English UI.
-9. Create durable Pro add-on (`digital_legacy_pro` or set `STORE_PRO_PRODUCT_ID`) and connect StoreContext in Electron.
+8. Screenshots must show the English UI (`npm run screenshots` with `npm run dev` running; include `08-pro-cloud`).
+9. Create durable Pro add-on (`digital_legacy_pro` or set `STORE_PRO_PRODUCT_ID`) and finish `StoreContext` in `electron/main.mjs` (preload bridge is already in `electron/preload.mjs`).
+
+### Already prepared (no Partner Center needed)
+
+- Electron preload IAP bridge: `window.digitalLegacyStore`
+- Identity preflight: `npm run store:check-identity`
+- MSIX script stops cleanly if identity env is missing
+- NSIS desktop build: `npm run electron:build`
 
 Do not add Community to the Store listing until in-app report and block exist.

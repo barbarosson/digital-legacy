@@ -135,6 +135,7 @@ export async function unlockProFromStore(): Promise<
       store: Awaited<ReturnType<typeof probeStoreProLicense>>;
     }
 > {
+  // Prefer Electron main-process license flag when the desktop bridge sets it.
   const store = await probeStoreProLicense();
   if (!store.licensed) {
     return { ok: false, error: store.reason, store };
