@@ -8,7 +8,12 @@ import {
   useMemo,
   useState,
 } from "react";
-import { dictionaries, type Language } from "./dictionary";
+import {
+  dictionaries,
+  DEFAULT_LANGUAGE,
+  isLanguage,
+  type Language,
+} from "./dictionary";
 
 export type Theme = "dark" | "light";
 export type Accent = "amber" | "blue" | "emerald" | "rose" | "violet";
@@ -32,17 +37,33 @@ const PrefsContext = createContext<PrefsContextValue | null>(null);
 const STORAGE_KEY = "dm-prefs";
 
 const DEFAULT_PREFS: Prefs = {
-  lang: "en",
+  lang: DEFAULT_LANGUAGE,
   theme: "dark",
   accent: "amber",
 };
+
+function normalizePrefs(raw: Partial<Prefs> | null | undefined): Prefs {
+  const next: Prefs = { ...DEFAULT_PREFS, ...(raw ?? {}) };
+  if (!isLanguage(next.lang)) next.lang = DEFAULT_LANGUAGE;
+  if (next.theme !== "dark" && next.theme !== "light") next.theme = "dark";
+  if (
+    next.accent !== "amber" &&
+    next.accent !== "blue" &&
+    next.accent !== "emerald" &&
+    next.accent !== "rose" &&
+    next.accent !== "violet"
+  ) {
+    next.accent = "amber";
+  }
+  return next;
+}
 
 function readPrefs(): Prefs {
   if (typeof window === "undefined") return DEFAULT_PREFS;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_PREFS;
-    return { ...DEFAULT_PREFS, ...(JSON.parse(raw) as Partial<Prefs>) };
+    return normalizePrefs(JSON.parse(raw) as Partial<Prefs>);
   } catch {
     return DEFAULT_PREFS;
   }
@@ -79,11 +100,11 @@ export function PreferencesProvider({
 
   const update = useCallback((partial: Partial<Prefs>) => {
     setPrefs((current) => {
-      const next = { ...current, ...partial };
+      const next = normalizePrefs({ ...current, ...partial });
       try {
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       } catch {
-        // yoksay
+        // ignore
       }
       applyToDocument(next);
       return next;

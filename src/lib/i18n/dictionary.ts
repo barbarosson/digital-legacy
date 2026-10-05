@@ -1,9 +1,15 @@
-export type Language = "tr" | "en";
+export type Language = "en" | "tr";
+
+export const DEFAULT_LANGUAGE: Language = "en";
 
 export const LANGUAGES: { value: Language; label: string }[] = [
-  { value: "tr", label: "Türkçe" },
   { value: "en", label: "English" },
+  { value: "tr", label: "Türkçe" },
 ];
+
+export function isLanguage(value: unknown): value is Language {
+  return value === "en" || value === "tr";
+}
 
 type Dict = Record<string, unknown>;
 
@@ -56,7 +62,8 @@ export const dictionaries: Record<Language, Dict> = {
       light: "Açık",
       accent: "Vurgu rengi",
       language: "Dil",
-      languageDesc: "Arayüz dilini değiştirin.",
+      languageDesc:
+        "Varsayılan dil İngilizce. Türkçe isteğe bağlıdır.",
       reminderTitle: "Günlük hatırlatıcı",
       reminderDesc:
         "Masaüstü uygulaması açıkken, her gün belirlediğiniz saatte günlük kaydı için bildirim gösterilir.",
@@ -693,7 +700,8 @@ export const dictionaries: Record<Language, Dict> = {
       light: "Light",
       accent: "Accent color",
       language: "Language",
-      languageDesc: "Change the interface language.",
+      languageDesc:
+        "English is the default. Turkish is optional.",
       reminderTitle: "Daily reminder",
       reminderDesc:
         "While the desktop app is open, a notification is shown each day at your chosen time to record your diary.",

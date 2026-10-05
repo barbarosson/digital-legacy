@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   const { dataKey } = session;
 
   const { searchParams } = new URL(request.url);
-  const text = (searchParams.get("text") ?? "").trim().toLocaleLowerCase("tr");
+  const text = (searchParams.get("text") ?? "").trim().toLocaleLowerCase("en-US");
   const mood = (searchParams.get("mood") ?? "").trim();
   const from = (searchParams.get("from") ?? "").trim();
   const to = (searchParams.get("to") ?? "").trim();
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
       const haystack = [decrypted.title, decrypted.content, decrypted.location]
         .filter(Boolean)
         .join(" ")
-        .toLocaleLowerCase("tr");
+        .toLocaleLowerCase("en-US");
       if (!haystack.includes(text)) continue;
     }
 
