@@ -1,7 +1,11 @@
 /**
  * Validates Partner Center identity env vars before `npm run electron:msix`.
- * Does not print secret CN beyond length checks.
+ * Loads `.env.store` if present (gitignored).
  */
+import { loadStoreEnv } from "./load-store-env.mjs";
+
+loadStoreEnv();
+
 const required = [
   "STORE_IDENTITY_NAME",
   "STORE_PUBLISHER",
@@ -17,7 +21,7 @@ if (missing.length) {
 
   ${missing.join("\n  ")}
 
-Set them from Partner Center → App identity, then retry:
+Create .env.store in the project root (see .env.example) or set env vars, then retry:
   npm run electron:msix
 
 Optional:
@@ -41,4 +45,7 @@ console.log(`  STORE_IDENTITY_NAME=${process.env.STORE_IDENTITY_NAME.trim()}`);
 console.log(`  STORE_PUBLISHER_DISPLAY=${process.env.STORE_PUBLISHER_DISPLAY.trim()}`);
 console.log(`  STORE_PUBLISHER=CN=… (${publisher.length} chars)`);
 console.log(`  STORE_PRO_PRODUCT_ID=${productId}`);
+if (process.env.STORE_ID) {
+  console.log(`  STORE_ID=${process.env.STORE_ID.trim()}`);
+}
 console.log("Ready for: npm run electron:msix");
