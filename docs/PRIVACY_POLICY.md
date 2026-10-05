@@ -53,4 +53,4 @@ Digital Legacy is not directed at children under 13.
 
 ## Contact
 
-Support contact will be published on the Microsoft Store listing when the app is submitted. Until then, use the GitHub repository associated with this product.
+Support contact will be published on the [Microsoft Store listing](https://apps.microsoft.com/detail/9P579XWZ748T) when the app is submitted. Until then, use the [GitHub repository](https://github.com/barbarosson/digital-legacy) associated with this product.

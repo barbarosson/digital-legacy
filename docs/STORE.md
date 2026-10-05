@@ -35,9 +35,12 @@ Community / Chat stay **off** unless `NEXT_PUBLIC_ENABLE_COMMUNITY=true` is set.
 - Icons / listing assets / NSIS + MSIX scripts
 - Pro Cloud + dead-man + IAP skeleton (demo codes disabled in Store builds)
 
-Public privacy URL:
+Public URLs (GitHub Pages — no separate marketing site):
 
-- https://barbarosson.github.io/digital-legacy/privacy/
+- Site root: https://barbarosson.github.io/digital-legacy/
+- Privacy (paste in Partner Center): https://barbarosson.github.io/digital-legacy/privacy/
+
+Pages deploys from the `docs/` folder on push to `main` (`.github/workflows/pages.yml`). In the repo **Settings → Pages**, source must be **GitHub Actions** (one-time).
 
 Monetization:
 
