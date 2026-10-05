@@ -1,8 +1,7 @@
-import fs from "node:fs";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { requireUnlockedSession } from "@/lib/auth/guard";
-import { findVideoPath } from "@/lib/calendar/videos";
+import { findVideoPath, readEncryptedFile } from "@/lib/calendar/videos";
 import { getDb } from "@/lib/db";
 import { calendarMemories } from "@/lib/db/schema";
 
@@ -30,13 +29,19 @@ export async function GET(_request: Request, { params }: Params) {
   }
 
   const filePath = findVideoPath(entryId);
-  if (!filePath || !fs.existsSync(filePath)) {
+  if (!filePath) {
     return NextResponse.json({ error: "Video file not found." }, { status: 404 });
   }
 
-  const buffer = fs.readFileSync(filePath);
+  const buffer = readEncryptedFile(filePath, session.dataKey);
+  if (!buffer) {
+    return NextResponse.json(
+      { error: "Could not decrypt video. Unlock with the correct PIN." },
+      { status: 401 },
+    );
+  }
 
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": row.videoMimeType ?? "video/mp4",
       "Content-Length": String(buffer.length),

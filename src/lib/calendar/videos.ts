@@ -1,6 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { VIDEOS_DIR } from "@/lib/paths";
+import {
+  decryptVaultBuffer,
+  encryptVaultBuffer,
+} from "@/lib/cloud/vault-crypto";
 
 export const MAX_VIDEO_BYTES = 200 * 1024 * 1024;
 
@@ -17,6 +21,8 @@ const EXT_BY_MIME: Record<string, string> = {
   "video/quicktime": ".mov",
   "video/x-msvideo": ".avi",
 };
+
+const DLENC_MAGIC = Buffer.from("DLENC1");
 
 export function ensureVideosDir() {
   if (!fs.existsSync(VIDEOS_DIR)) {
@@ -50,9 +56,41 @@ export function findThumbnailPath(entryId: number): string | null {
   return fs.existsSync(target) ? target : null;
 }
 
+function isEncryptedBlob(buf: Buffer): boolean {
+  return buf.length >= 6 && buf.subarray(0, 6).equals(DLENC_MAGIC);
+}
+
+/**
+ * Read a media file: decrypt with PIN session key when encrypted.
+ * Legacy plaintext files still work; optionally rewrite encrypted.
+ */
+export function readEncryptedFile(
+  filePath: string,
+  dataKey: Buffer,
+  rewritePlaintext = true,
+): Buffer | null {
+  if (!fs.existsSync(filePath)) return null;
+  const raw = fs.readFileSync(filePath);
+
+  if (isEncryptedBlob(raw)) {
+    return decryptVaultBuffer(raw, dataKey);
+  }
+
+  // Legacy plaintext — upgrade on read when unlocked
+  if (rewritePlaintext) {
+    try {
+      fs.writeFileSync(filePath, encryptVaultBuffer(raw, dataKey));
+    } catch {
+      /* keep serving plaintext if rewrite fails */
+    }
+  }
+  return raw;
+}
+
 export async function saveThumbnailFile(
   entryId: number,
   dataUrl: string,
+  dataKey: Buffer,
 ): Promise<string | null> {
   const match = /^data:image\/(png|jpeg);base64,(.+)$/.exec(dataUrl);
   if (!match) return null;
@@ -62,7 +100,7 @@ export async function saveThumbnailFile(
   if (buffer.length > 5 * 1024 * 1024) return null;
 
   const target = getThumbnailPath(entryId);
-  fs.writeFileSync(target, buffer);
+  fs.writeFileSync(target, encryptVaultBuffer(buffer, dataKey));
   return path.basename(target);
 }
 
@@ -76,6 +114,7 @@ export function deleteThumbnailFile(entryId: number) {
 export async function saveVideoFile(
   entryId: number,
   file: File,
+  dataKey: Buffer,
 ): Promise<{ fileName: string; mimeType: string }> {
   if (!ALLOWED_VIDEO_TYPES.has(file.type)) {
     throw new Error("Supported formats: MP4, WebM, MOV, AVI.");
@@ -91,7 +130,7 @@ export async function saveVideoFile(
   const mimeType = file.type;
   const targetPath = getVideoPath(entryId, mimeType);
   const buffer = Buffer.from(await file.arrayBuffer());
-  fs.writeFileSync(targetPath, buffer);
+  fs.writeFileSync(targetPath, encryptVaultBuffer(buffer, dataKey));
 
   return {
     fileName: path.basename(targetPath),

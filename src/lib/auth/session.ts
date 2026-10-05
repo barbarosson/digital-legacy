@@ -3,6 +3,10 @@ import { cookies } from "next/headers";
 import { eq, lt } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { appSettings, sessions } from "@/lib/db/schema";
+import {
+  sealSessionDataKey,
+  unsealSessionDataKey,
+} from "@/lib/auth/session-seal";
 import { PIN_SETTING_KEY, SESSION_COOKIE, SESSION_TTL_MS } from "./constants";
 
 export async function isPinConfigured(): Promise<boolean> {
@@ -49,7 +53,7 @@ export async function createSession(dataKey: Buffer): Promise<string> {
 
   await db.insert(sessions).values({
     token,
-    dataKey: dataKey.toString("base64"),
+    dataKey: sealSessionDataKey(token, dataKey),
     expiresAt,
   });
 
@@ -71,7 +75,7 @@ export async function getSessionDataKey(
   if (!row[0] || row[0].expiresAt.getTime() <= Date.now()) return null;
   if (!row[0].dataKey) return null;
 
-  return Buffer.from(row[0].dataKey, "base64");
+  return unsealSessionDataKey(token, row[0].dataKey);
 }
 
 export async function validateSessionToken(
@@ -109,12 +113,21 @@ export async function isSessionFullyUnlocked(): Promise<boolean> {
   return dataKey !== null;
 }
 
+/** Electron serves over http://127.0.0.1 — Secure cookies would never stick. */
+function cookieSecure(): boolean {
+  if (process.env.COOKIE_SECURE === "true") return true;
+  if (process.env.COOKIE_SECURE === "false") return false;
+  if (process.env.ELECTRON_HTTP === "1") return false;
+  if (process.env.ELECTRON_DEV === "1") return false;
+  return process.env.NODE_ENV === "production";
+}
+
 export async function setSessionCookie(token: string) {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: cookieSecure(),
     path: "/",
     maxAge: SESSION_TTL_MS / 1000,
   });
@@ -129,5 +142,11 @@ export async function destroySession(token: string | undefined) {
   if (!token) return;
   const db = getDb();
   await db.delete(sessions).where(eq(sessions.token, token));
+  await clearSessionCookie();
+}
+
+export async function destroyAllSessions() {
+  const db = getDb();
+  await db.delete(sessions);
   await clearSessionCookie();
 }

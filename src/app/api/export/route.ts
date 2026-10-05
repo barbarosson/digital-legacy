@@ -1,10 +1,9 @@
-import fs from "node:fs";
 import { NextResponse } from "next/server";
 import { desc } from "drizzle-orm";
 import JSZip from "jszip";
 import { requireUnlockedSession } from "@/lib/auth/guard";
 import { enrichWithAssignments } from "@/lib/assignments";
-import { findThumbnailPath, findVideoPath } from "@/lib/calendar/videos";
+import { findThumbnailPath, findVideoPath, readEncryptedFile } from "@/lib/calendar/videos";
 import {
   decryptAssetFields,
   decryptBeneficiaryFields,
@@ -12,6 +11,7 @@ import {
   decryptMessageFields,
 } from "@/lib/crypto/records";
 import { getDb } from "@/lib/db";
+import { isPro } from "@/lib/entitlements";
 import {
   beneficiaries,
   beneficiaryGroups,
@@ -19,6 +19,7 @@ import {
   legacyAssets,
   messages,
 } from "@/lib/db/schema";
+import { markUsbExportDone } from "@/lib/usb-reminder";
 
 export async function POST() {
   const session = await requireUnlockedSession();
@@ -80,9 +81,10 @@ export async function POST() {
     "This archive contains your personal data in readable (decrypted) form:",
     "- data.json: heirs, groups, assets, messages, and calendar memories",
     "- videos/: calendar daily videos",
-    "- thumbnails/: video thumbnails",
+    "- thumbnails/: video thumbnails (decrypted for this export)",
     "",
-    "These files are not encrypted. Store them in a safe place.",
+    "On disk inside the app, videos are encrypted with your PIN key.",
+    "This ZIP is readable — store it in a safe place.",
   ].join("\n");
   zip.file("README.txt", readme);
 
@@ -92,19 +94,27 @@ export async function POST() {
   for (const memory of memoryRows) {
     if (memory.videoFileName) {
       const videoPath = findVideoPath(memory.id);
-      if (videoPath && fs.existsSync(videoPath)) {
-        const buffer = fs.readFileSync(videoPath);
-        const ext = memory.videoFileName.split(".").pop() ?? "mp4";
-        videosFolder?.file(`${memory.entryDate}-memory-${memory.id}.${ext}`, buffer);
+      if (videoPath) {
+        const buffer = readEncryptedFile(videoPath, dataKey, false);
+        if (buffer) {
+          const ext = memory.videoFileName.split(".").pop() ?? "mp4";
+          videosFolder?.file(
+            `${memory.entryDate}-memory-${memory.id}.${ext}`,
+            buffer,
+          );
+        }
       }
     }
     if (memory.thumbnailFileName) {
       const thumbPath = findThumbnailPath(memory.id);
-      if (thumbPath && fs.existsSync(thumbPath)) {
-        thumbsFolder?.file(
-          `${memory.entryDate}-memory-${memory.id}.jpg`,
-          fs.readFileSync(thumbPath),
-        );
+      if (thumbPath) {
+        const buffer = readEncryptedFile(thumbPath, dataKey, false);
+        if (buffer) {
+          thumbsFolder?.file(
+            `${memory.entryDate}-memory-${memory.id}.jpg`,
+            buffer,
+          );
+        }
       }
     }
   }
@@ -112,6 +122,10 @@ export async function POST() {
   const content = await zip.generateAsync({ type: "nodebuffer" });
   const stamp = new Date().toISOString().slice(0, 10);
   const filename = `digital-legacy-export-${stamp}.zip`;
+
+  if (await isPro()) {
+    await markUsbExportDone().catch(() => {});
+  }
 
   return new NextResponse(new Uint8Array(content), {
     headers: {

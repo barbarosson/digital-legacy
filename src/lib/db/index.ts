@@ -31,6 +31,7 @@ export function closeCachedConnection() {
   globalThis.__dijitalMirasSqlite?.close();
   globalThis.__dijitalMirasSqlite = undefined;
   globalThis.__dijitalMirasDb = undefined;
+  dbInstance = undefined;
 }
 
 function openDatabase(): { sqlite: Database.Database; db: DbInstance } {
@@ -75,10 +76,9 @@ function connectDatabase(): DbInstance {
 
   const { sqlite, db } = openDatabase();
 
-  if (process.env.NODE_ENV !== "production") {
-    globalThis.__dijitalMirasSqlite = sqlite;
-    globalThis.__dijitalMirasDb = db;
-  }
+  // Always keep handles so factory-reset / reload can close the file on Windows.
+  globalThis.__dijitalMirasSqlite = sqlite;
+  globalThis.__dijitalMirasDb = db;
 
   return db;
 }

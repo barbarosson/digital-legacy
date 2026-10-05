@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { verifyPin, validatePinFormat } from "@/lib/auth/pin";
+import { hashPin, validatePinFormat, verifyPin } from "@/lib/auth/pin";
+import {
+  clearPinFailures,
+  getPinLockStatus,
+  recordPinFailure,
+} from "@/lib/auth/rate-limit";
 import {
   createSession,
   getPinHash,
@@ -18,6 +23,17 @@ export async function POST(request: Request) {
     );
   }
 
+  const lock = await getPinLockStatus();
+  if (lock.locked) {
+    return NextResponse.json(
+      {
+        error: `Too many failed attempts. Try again in ${lock.retryAfterSec} seconds.`,
+        retryAfterSec: lock.retryAfterSec,
+      },
+      { status: 429 },
+    );
+  }
+
   const body = await request.json();
   const { pin } = body;
 
@@ -28,7 +44,23 @@ export async function POST(request: Request) {
 
   const stored = await getPinHash();
   if (!stored || !verifyPin(pin, stored)) {
-    return NextResponse.json({ error: "Incorrect PIN." }, { status: 401 });
+    const after = await recordPinFailure();
+    if (after.locked) {
+      return NextResponse.json(
+        {
+          error: `Too many failed attempts. Try again in ${after.retryAfterSec} seconds.`,
+          retryAfterSec: after.retryAfterSec,
+        },
+        { status: 429 },
+      );
+    }
+    return NextResponse.json(
+      {
+        error: "Incorrect PIN.",
+        remainingAttempts: after.remainingAttempts,
+      },
+      { status: 401 },
+    );
   }
 
   const dataKey = await unlockDataKey(pin);
@@ -39,6 +71,7 @@ export async function POST(request: Request) {
     );
   }
 
+  await clearPinFailures();
   const token = await createSession(dataKey);
   await setSessionCookie(token);
 

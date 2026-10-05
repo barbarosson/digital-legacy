@@ -10,6 +10,7 @@ const isDev = Boolean(process.env.ELECTRON_DEV) || !app.isPackaged;
 
 let reminderInterval = null;
 let lastReminderShownOn = null;
+let lastUsbReminderShownOn = null;
 
 const projectRoot = isDev
   ? path.resolve(__dirname, "..")
@@ -55,6 +56,9 @@ function buildServerEnv(port) {
     DIJITAL_MIRAS_ROOT: projectRoot,
     DIJITAL_MIRAS_DATA_DIR: getUserDataDir(),
     ELECTRON_RUN_AS_NODE: "1",
+    // Local Next server is HTTP — Secure cookies must stay off.
+    ELECTRON_HTTP: "1",
+    COOKIE_SECURE: "false",
   };
 }
 
@@ -183,25 +187,75 @@ function readReminderConfig() {
   }
 }
 
+function readUsbReminderConfig() {
+  try {
+    const file = path.join(getUserDataDir(), "usb-reminder.json");
+    if (!fs.existsSync(file)) return null;
+    return JSON.parse(fs.readFileSync(file, "utf-8"));
+  } catch {
+    return null;
+  }
+}
+
+function daysSince(iso) {
+  if (!iso) return Number.POSITIVE_INFINITY;
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return Number.POSITIVE_INFINITY;
+  return (Date.now() - then) / (1000 * 60 * 60 * 24);
+}
+
 function startReminderScheduler() {
   if (reminderInterval) return;
 
   reminderInterval = setInterval(() => {
-    const config = readReminderConfig();
-    if (!config?.enabled || !Notification.isSupported()) return;
+    if (!Notification.isSupported()) return;
 
+    const config = readReminderConfig();
     const now = new Date();
     const hh = String(now.getHours()).padStart(2, "0");
     const mm = String(now.getMinutes()).padStart(2, "0");
     const current = `${hh}:${mm}`;
     const today = now.toISOString().slice(0, 10);
 
-    if (current === config.time && lastReminderShownOn !== today) {
+    if (
+      config?.enabled &&
+      current === config.time &&
+      lastReminderShownOn !== today
+    ) {
       lastReminderShownOn = today;
       new Notification({
         title: "Digital Legacy",
         body: config.message || "Don't forget to record today's video.",
       }).show();
+    }
+
+    // Pro: USB / trusted-contact handoff reminder (interval days, offline)
+    const usb = readUsbReminderConfig();
+    if (usb?.enabled) {
+      const interval = Number(usb.intervalDays) || 30;
+      const sinceExport = daysSince(usb.lastExportedAt);
+      const due = sinceExport >= interval;
+      if (due && lastUsbReminderShownOn !== today) {
+        lastUsbReminderShownOn = today;
+        try {
+          const next = {
+            ...usb,
+            lastShownOn: today,
+          };
+          fs.writeFileSync(
+            path.join(getUserDataDir(), "usb-reminder.json"),
+            JSON.stringify(next, null, 2),
+          );
+        } catch {
+          /* ignore */
+        }
+        new Notification({
+          title: "Digital Legacy Pro",
+          body:
+            usb.message ||
+            "Time to copy your backup to a USB drive for your trusted contact.",
+        }).show();
+      }
     }
   }, 30_000);
 }

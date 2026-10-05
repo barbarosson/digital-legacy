@@ -25,6 +25,9 @@ export function GirisClient() {
   const [confirmPin, setConfirmPin] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetConfirm, setResetConfirm] = useState("");
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth/status")
@@ -62,6 +65,28 @@ export function GirisClient() {
     }
 
     router.replace(next);
+  }
+
+  async function handleFactoryReset(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setResetting(true);
+    const res = await fetch("/api/auth/reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ confirm: resetConfirm.trim() }),
+    });
+    const data = await res.json();
+    setResetting(false);
+    if (!res.ok) {
+      setError(data.error ?? t("login.resetFailed"));
+      return;
+    }
+    setShowReset(false);
+    setResetConfirm("");
+    setStatus({ pinConfigured: false, unlocked: false });
+    setPin("");
+    setConfirmPin("");
   }
 
   if (!status) {
@@ -144,6 +169,64 @@ export function GirisClient() {
                     : t("login.unlock")}
               </Button>
             </form>
+
+            <p className="mt-4 text-xs leading-relaxed text-slate-600">
+              {t("login.note")}
+            </p>
+
+            {!isSetup && (
+              <div className="mt-4 border-t border-slate-800 pt-4">
+                {!showReset ? (
+                  <button
+                    type="button"
+                    className="text-sm text-slate-500 underline-offset-2 hover:text-rose-400 hover:underline"
+                    onClick={() => {
+                      setShowReset(true);
+                      setError("");
+                    }}
+                  >
+                    {t("login.forgotPin")}
+                  </button>
+                ) : (
+                  <form onSubmit={handleFactoryReset} className="space-y-3">
+                    <p className="text-sm text-rose-400/90">
+                      {t("login.resetWarning")}
+                    </p>
+                    <label className="mb-1.5 block text-sm text-slate-400">
+                      {t("login.resetConfirmLabel")}
+                    </label>
+                    <Input
+                      value={resetConfirm}
+                      onChange={(e) => setResetConfirm(e.target.value)}
+                      placeholder="RESET LEGACY"
+                      autoComplete="off"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        type="submit"
+                        variant="danger"
+                        disabled={resetting}
+                      >
+                        {resetting
+                          ? t("login.resetting")
+                          : t("login.resetSubmit")}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                          setShowReset(false);
+                          setResetConfirm("");
+                          setError("");
+                        }}
+                      >
+                        {t("common.cancel")}
+                      </Button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

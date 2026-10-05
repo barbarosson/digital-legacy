@@ -47,6 +47,8 @@ const next = spawn("npm", ["run", "dev"], {
   env: {
     ...process.env,
     DIJITAL_MIRAS_DATA_DIR: path.join(root, "data"),
+    ELECTRON_HTTP: "1",
+    COOKIE_SECURE: "false",
   },
 });
 
@@ -78,6 +80,8 @@ electron = spawn("npx", ["electron", "."], {
   env: {
     ...process.env,
     ELECTRON_DEV: "1",
+    ELECTRON_HTTP: "1",
+    COOKIE_SECURE: "false",
     DIJITAL_MIRAS_PORT: String(port),
     DIJITAL_MIRAS_DATA_DIR: path.join(root, "data"),
   },

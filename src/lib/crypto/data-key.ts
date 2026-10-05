@@ -44,3 +44,14 @@ export async function unlockDataKey(pin: string): Promise<Buffer | null> {
 
   return unwrapDataKey(pin, wrapped);
 }
+
+/** Re-wrap the existing data key under a new PIN (after verifying the old one). */
+export async function rewrapDataKey(
+  currentPin: string,
+  newPin: string,
+): Promise<Buffer | null> {
+  const dataKey = await unlockDataKey(currentPin);
+  if (!dataKey) return null;
+  await setWrappedDataKey(wrapDataKey(newPin, dataKey));
+  return dataKey;
+}

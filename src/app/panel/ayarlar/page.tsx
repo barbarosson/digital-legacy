@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ProSection } from "@/components/pro/pro-section";
+import { SecuritySection } from "@/components/settings/security-section";
 import { LANGUAGES } from "@/lib/i18n/dictionary";
 import { usePrefs, type Accent } from "@/lib/i18n/provider";
 import { cn } from "@/lib/utils";
@@ -248,6 +250,10 @@ export default function AyarlarPage() {
       <p className="text-xs leading-relaxed text-slate-600">
         {t("settings.reminderNote")}
       </p>
+
+      <SecuritySection />
+
+      <ProSection />
 
       <Card>
         <CardHeader>

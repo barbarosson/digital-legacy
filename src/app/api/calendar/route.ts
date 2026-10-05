@@ -237,10 +237,10 @@ export async function POST(request: Request) {
 
   try {
     if (video instanceof File && video.size > 0) {
-      const saved = await saveVideoFile(row.id, video);
+      const saved = await saveVideoFile(row.id, video, dataKey);
       let thumbnailFileName: string | null = null;
       if (thumbnail) {
-        thumbnailFileName = await saveThumbnailFile(row.id, thumbnail);
+        thumbnailFileName = await saveThumbnailFile(row.id, thumbnail, dataKey);
       }
       await db
         .update(calendarMemories)

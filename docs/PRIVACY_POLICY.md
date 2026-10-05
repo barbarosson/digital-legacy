@@ -18,7 +18,9 @@ The app stores data locally on the device where it is installed, typically under
 
 Sensitive fields are encrypted with AES-256-GCM. The PIN is required to decrypt them. If you forget the PIN, the encrypted data cannot be recovered.
 
-Videos and the SQLite database never leave your computer unless you export a backup, use GDPR export, or later enable optional Community features.
+Video diary files and thumbnails on disk are also encrypted with the same PIN-derived key. They can only be played after you unlock the app with your PIN. Older plaintext media files are upgraded to encrypted form the next time they are opened while unlocked.
+
+Videos and the SQLite database never leave your computer unless you export a backup, use GDPR export, enable optional Community features, or enable optional **Pro Cloud** backup.
 
 ## Camera and microphone
 
@@ -31,6 +33,8 @@ If you enable the daily reminder, the desktop app may show a Windows notificatio
 ## Network
 
 The core vault does not require an internet connection.
+
+Optional **Pro Cloud** (paid) can upload an **encrypted** copy of your database to Supabase Storage and store dead-man alert email addresses so a scheduled job can warn you or notify heirs after prolonged missed check-ins. Cloud backups are encrypted with your device PIN session key; we cannot read vault contents. Alert emails do not include passwords or decrypted vault data. Email delivery may use a third-party provider (for example Resend).
 
 Optional Community and Chat (disabled in the Store v1 build unless you turn them on) use a third-party backend (Supabase) for accounts, posts, and messages between connected users. If you enable that feature, the privacy terms of that service also apply, and you should review what you share with other users.
 

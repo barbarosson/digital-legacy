@@ -19,7 +19,8 @@ Community / Chat stay **off** unless `NEXT_PUBLIC_ENABLE_COMMUNITY=true` is set.
 Already in the repo:
 
 - English default UI and product name
-- Isolated GitHub: https://github.com/barbarosson/digital-legacy (private)
+- Isolated GitHub: https://github.com/barbarosson/digital-legacy (public)
+- Phase 0 stability: Electron HTTP cookies, sealed session keys, PIN rate limit, change PIN / factory reset, About
 - Privacy policy: `docs/PRIVACY_POLICY.md` + public HTML: `docs/privacy/index.html`
 - App icons: `build/icon.ico`, `public/icon-256.png`, Store listing `public/store-listing-300.png`
 - Screenshots (1920×1200): `docs/screenshots/*-1920.png`
@@ -31,9 +32,17 @@ Public privacy URL (live):
 
 - https://barbarosson.github.io/digital-legacy/privacy/
 
+Monetization (local for now):
+
+- Free: core vault (PIN, assets, heirs, messages, calendar, delivery, backup)
+- Pro: trusted contacts + USB export reminders + **Pro Cloud** (encrypted backup + dead-man email)
+- Early unlock codes: `DIGITAL-LEGACY-PRO` / `DL-PRO-2026` (replace with Store IAP later)
+- Cloud setup: [docs/CLOUD.md](CLOUD.md)
+
 Still needed before upload:
 
 - Partner Center developer account + app identity (Phase 3)
+- Wire Pro unlock to Microsoft Store in-app purchase when the account exists
 
 ## Phase 3 — When the Store account arrives
 

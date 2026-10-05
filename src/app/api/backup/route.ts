@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 import { requireUnlockedSession } from "@/lib/auth/guard";
 import { formatBytes, getBackupInfo } from "@/lib/backup/database";
 import { checkpointDatabase } from "@/lib/db";
+import { isPro } from "@/lib/entitlements";
 import { DB_PATH } from "@/lib/paths";
+import { markUsbExportDone } from "@/lib/usb-reminder";
 
 export async function GET() {
   const session = await requireUnlockedSession();
@@ -38,6 +40,10 @@ export async function POST() {
   const buffer = fs.readFileSync(DB_PATH);
   const stamp = new Date().toISOString().slice(0, 10);
   const filename = `digital-legacy-backup-${stamp}.db`;
+
+  if (await isPro()) {
+    await markUsbExportDone().catch(() => {});
+  }
 
   return new NextResponse(buffer, {
     headers: {

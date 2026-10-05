@@ -48,7 +48,7 @@ export const dictionaries: Record<Language, Dict> = {
     settings: {
       title: "Ayarlar",
       subtitle:
-        "Görünüm, dil ve günlük hatırlatıcı tercihlerinizi yönetin.",
+        "Görünüm, dil, hatırlatıcılar ve Pro (güvenilir kişi / USB) ayarları.",
       appearance: "Görünüm",
       appearanceDesc: "Tema ve vurgu rengini seçin.",
       theme: "Tema",
@@ -70,6 +70,26 @@ export const dictionaries: Record<Language, Dict> = {
       privacyDesc:
         "Uygulama verileri bu bilgisayarda saklanır. Mağaza gönderimi için gizlilik metni docs/PRIVACY_POLICY.md dosyasındadır.",
       privacyOpen: "Gizlilik politikasını aç",
+      pinTitle: "PIN değiştir",
+      pinDesc:
+        "Yeni PIN ile kasa anahtarı yeniden sarılır. Oturum yenilenir.",
+      currentPin: "Mevcut PIN",
+      newPin: "Yeni PIN",
+      confirmNewPin: "Yeni PIN (tekrar)",
+      changePin: "PIN'i değiştir",
+      pinChangeOk: "PIN güncellendi.",
+      pinChangeFailed: "PIN değiştirilemedi.",
+      resetTitle: "Fabrika sıfırlama",
+      resetDesc:
+        "Tüm yerel veriyi siler. PIN unutulduğunda veya sıfırdan başlamak için kullanın.",
+      resetConfirmLabel: 'Onay için yazın: RESET LEGACY',
+      resetSubmit: "Kasayı sil",
+      resetting: "Siliniyor...",
+      resetFailed: "Sıfırlama başarısız.",
+      aboutTitle: "Hakkında",
+      aboutDesc: "Sürüm ve veri konumu.",
+      aboutVersion: "Sürüm",
+      aboutDataDir: "Veri klasörü",
       accents: {
         amber: "Kehribar",
         blue: "Mavi",
@@ -77,6 +97,118 @@ export const dictionaries: Record<Language, Dict> = {
         rose: "Gül",
         violet: "Mor",
       },
+    },
+    pro: {
+      badge: "Pro",
+      title: "Digital Legacy Pro",
+      subtitle:
+        "Çekirdek kasa ücretsizdir. Güvenilir kişi ve USB yedek hatırlatması Pro özellikleridir.",
+      statusFree: "Planınız: Ücretsiz",
+      statusPro: "Planınız: Pro — açık",
+      freeIncludes: "Ücretsiz içerir:",
+      freeItem1: "PIN kilit, şifreleme, varlıklar, mirasçılar, mesajlar",
+      freeItem2: "Takvim video günlüğü, teslim motoru, yedek / GDPR dışa aktarma",
+      freeItem3: "Tema, dil ve günlük hatırlatıcı",
+      proIncludes: "Pro ekler:",
+      featureTrustedTitle: "Güvenilir kişi",
+      featureTrustedDesc:
+        "USB / paket kopyasını tutacak güvenilir kişiyi ve teslim talimatını kaydedin (internetsiz elden teslim).",
+      featureUsbTitle: "USB yedek hatırlatması",
+      featureUsbDesc:
+        "Belirlediğiniz günde bir masaüstü bildirimi: yedeği USB'ye kopyalayıp güvenilir kişiye verin.",
+      featureCloudTitle: "Bulut yedek",
+      featureCloudDesc:
+        "Şifreli kasa yedeğini Supabase'e yükleyin; yeni cihazda PIN ile indirip geri yükleyin.",
+      featureDeadmanTitle: "Dead-man e-posta",
+      featureDeadmanDesc:
+        "X gün check-in yoksa önce size uyarı, sonra mirasçı e-postalarına haber maili.",
+      lockedTitle: "Pro özelliği",
+      lockedDesc:
+        "Bu bölüm ücretlidir. Yukarıdan Pro'yu açın veya bir açma kodu girin.",
+      unlockCta: "Pro'yu aç",
+      unlockCode: "Açma kodu",
+      unlockHint:
+        "Mağaza satın alımı gelene kadar erken erişim kodu kullanın. Örnek: DIGITAL-LEGACY-PRO",
+      unlockSuccess: "Pro açıldı. Yeni özellikler kullanıma hazır.",
+      unlockFailed: "Kod geçersiz.",
+      trustedTitle: "Güvenilir kişi",
+      trustedDesc:
+        "Ölüm / kayıp durumunda USB paketini tutacak kişi. Uygulama ona otomatik yazmaz — siz düzenli kopya bırakırsınız.",
+      contactName: "Ad",
+      contactEmail: "E-posta",
+      contactPhone: "Telefon",
+      contactHandoff: "Teslim talimatı",
+      contactHandoffPlaceholder:
+        "Örn. Her ay USB'yi güncelle; bir şey olursa avukata ver.",
+      addContact: "Kişi ekle",
+      noContacts: "Henüz güvenilir kişi yok.",
+      noContactDetails: "İletişim bilgisi yok",
+      contactSaveFailed: "Kişi kaydedilemedi.",
+      usbTitle: "USB yedek hatırlatması",
+      usbDesc:
+        "Uygulama açıkken, son USB kopyasından beri geçen süre dolunca bildirim gösterir.",
+      usbEnable: "USB hatırlatmasını etkinleştir",
+      usbInterval: "Aralık (gün)",
+      usbMessage: "Bildirim metni",
+      usbLastExport: "Son USB / dışa aktarma işareti",
+      usbNever: "Henüz yok",
+      usbMarkDone: "Az önce USB'ye kopyaladım",
+      usbSaved: "USB hatırlatması kaydedildi.",
+      usbMarked: "Son kopya zamanı güncellendi.",
+      usbSaveFailed: "Kaydedilemedi.",
+      usbNote:
+        "Bildirimler yalnızca masaüstü uygulaması çalışırken görünür. İnternet gerekmez.",
+    },
+    cloud: {
+      title: "Pro Cloud",
+      subtitle:
+        "Şifreli bulut yedek ve dead-man e-posta. Kasa içeriği sunucuda okunamaz; sadece sizin PIN'iniz açar.",
+      unconfigured:
+        "Supabase yapılandırması yok. .env.local içine NEXT_PUBLIC_SUPABASE_URL ve NEXT_PUBLIC_SUPABASE_ANON_KEY ekleyin.",
+      authHint:
+        "Bulut hesabı yerel PIN'den ayrıdır. Yedek yüklemek ve check-in için giriş yapın.",
+      email: "E-posta",
+      password: "Şifre",
+      signIn: "Giriş yap",
+      signUp: "Hesap oluştur",
+      needAccount: "Hesabınız yok mu? Kayıt olun",
+      haveAccount: "Zaten hesabınız var mı? Giriş yapın",
+      confirmSent: "Onay e-postası gönderildiyse gelen kutunuzu kontrol edin.",
+      signedInAs: "Giriş:",
+      signOut: "Buluttan çık",
+      backupTitle: "Şifreli bulut yedek",
+      backupDesc:
+        "Yerel veritabanı PIN oturum anahtarıyla şifrelenir ve özel Storage'a yüklenir.",
+      upload: "Buluta yükle",
+      download: "İndir ve çöz (.db)",
+      lastBackup: "Son bulut yedeği",
+      packFailed: "Şifreli paket oluşturulamadı.",
+      uploadOk: "Bulut yedeği yüklendi.",
+      uploadFailed: "Yükleme başarısız.",
+      downloadOk: "Çözülmüş .db indirildi. Yedekleme sayfasından geri yükleyin.",
+      downloadFailed: "İndirme başarısız.",
+      decryptFailed: "Çözülemedi. Bu yedeği oluşturan PIN ile giriş yapın.",
+      checkinTitle: "Check-in (hayattayım)",
+      checkinDesc:
+        "Uygulamayı açmak veya yedek yüklemek de sayılır; ekstra check-in süreyi sıfırlar.",
+      lastCheckin: "Son check-in",
+      status: "Durum",
+      checkinCta: "Şimdi check-in yap",
+      checkinOk: "Check-in kaydedildi.",
+      deadmanTitle: "Dead-man e-posta",
+      deadmanDesc:
+        "Süre dolunca önce size uyarı, ardından listedeki adreslere haber maili. Mailde şifre veya kasa içeriği yoktur.",
+      deadmanEnable: "Dead-man e-postayı etkinleştir",
+      inactivityDays: "Hareketsizlik (gün)",
+      warningDays: "Önce size uyarı (gün kala)",
+      alertEmails: "Mirasçı / güvenilir e-postalar",
+      alertEmailsHint: "Virgülle ayırın. Bu adresler sunucuda saklanır (mail için).",
+      handoffNote: "Mailde görünecek kısa talimat",
+      handoffPlaceholder:
+        "Örn. USB'ye bakın veya avukatımla görüşün. Bulut yedeği hesabımda.",
+      deadmanSaved: "Dead-man ayarları kaydedildi.",
+      privacyNote:
+        "Mailler Edge Function ile gider (MAIL_PROVIDER: off / ses / resend). Anahtar yoksa off — ücret yok, durum yine ilerler. Detay: docs/CLOUD.md.",
     },
     moods: {
       mutlu: "Mutlu",
@@ -140,6 +272,13 @@ export const dictionaries: Record<Language, Dict> = {
       wrongPin: "Hatalı PIN.",
       processing: "İşleniyor...",
       note: "PIN'iniz cihazınızda güvenli biçimde saklanır ve şifreleme için kullanılır. PIN'i unutursanız verilere erişilemez.",
+      forgotPin: "PIN'i unuttum — kasayı sıfırla",
+      resetWarning:
+        "Bu işlem tüm yerel verileri (veritabanı, videolar) kalıcı olarak siler. Geri alınamaz.",
+      resetConfirmLabel: 'Onay için yazın: RESET LEGACY',
+      resetSubmit: "Her şeyi sil ve sıfırla",
+      resetting: "Sıfırlanıyor...",
+      resetFailed: "Sıfırlama başarısız.",
     },
     landing: {
       tagline: "Tamamen lokal · Şifreli · Güvenli",
@@ -518,7 +657,8 @@ export const dictionaries: Record<Language, Dict> = {
     },
     settings: {
       title: "Settings",
-      subtitle: "Manage appearance, language and daily reminder preferences.",
+      subtitle:
+        "Manage appearance, language, reminders, and Pro (trusted contact / USB).",
       appearance: "Appearance",
       appearanceDesc: "Choose the theme and accent color.",
       theme: "Theme",
@@ -540,6 +680,26 @@ export const dictionaries: Record<Language, Dict> = {
       privacyDesc:
         "App data stays on this computer. The Store privacy text is in docs/PRIVACY_POLICY.md.",
       privacyOpen: "Open privacy policy",
+      pinTitle: "Change PIN",
+      pinDesc:
+        "The vault key is re-wrapped with your new PIN. Your session is renewed.",
+      currentPin: "Current PIN",
+      newPin: "New PIN",
+      confirmNewPin: "New PIN (again)",
+      changePin: "Change PIN",
+      pinChangeOk: "PIN updated.",
+      pinChangeFailed: "Could not change PIN.",
+      resetTitle: "Factory reset",
+      resetDesc:
+        "Deletes all local data. Use if you forgot the PIN or want a clean start.",
+      resetConfirmLabel: "Type RESET LEGACY to confirm",
+      resetSubmit: "Wipe vault",
+      resetting: "Wiping...",
+      resetFailed: "Reset failed.",
+      aboutTitle: "About",
+      aboutDesc: "Version and data location.",
+      aboutVersion: "Version",
+      aboutDataDir: "Data folder",
       accents: {
         amber: "Amber",
         blue: "Blue",
@@ -547,6 +707,118 @@ export const dictionaries: Record<Language, Dict> = {
         rose: "Rose",
         violet: "Violet",
       },
+    },
+    pro: {
+      badge: "Pro",
+      title: "Digital Legacy Pro",
+      subtitle:
+        "The core vault is free. Trusted contacts and USB backup reminders are Pro features.",
+      statusFree: "Your plan: Free",
+      statusPro: "Your plan: Pro — unlocked",
+      freeIncludes: "Free includes:",
+      freeItem1: "PIN lock, encryption, assets, heirs, messages",
+      freeItem2: "Calendar video diary, delivery engine, backup / GDPR export",
+      freeItem3: "Theme, language, and daily reminder",
+      proIncludes: "Pro adds:",
+      featureTrustedTitle: "Trusted contact",
+      featureTrustedDesc:
+        "Record who holds a USB / package copy and the handoff instructions (offline delivery).",
+      featureUsbTitle: "USB backup reminder",
+      featureUsbDesc:
+        "A desktop notification on your interval: copy the backup to USB and give it to your trusted contact.",
+      featureCloudTitle: "Cloud backup",
+      featureCloudDesc:
+        "Upload an encrypted vault to Supabase; download and restore on a new device with your PIN.",
+      featureDeadmanTitle: "Dead-man email",
+      featureDeadmanDesc:
+        "If you miss check-ins for X days, warn yourself first, then email your heirs.",
+      lockedTitle: "Pro feature",
+      lockedDesc:
+        "This section is paid. Unlock Pro above or enter an unlock code.",
+      unlockCta: "Unlock Pro",
+      unlockCode: "Unlock code",
+      unlockHint:
+        "Until Store purchases ship, use an early-access code. Example: DIGITAL-LEGACY-PRO",
+      unlockSuccess: "Pro unlocked. New features are ready.",
+      unlockFailed: "Invalid code.",
+      trustedTitle: "Trusted contact",
+      trustedDesc:
+        "The person who keeps the USB package if you die or disappear. The app does not message them — you leave updated copies.",
+      contactName: "Name",
+      contactEmail: "Email",
+      contactPhone: "Phone",
+      contactHandoff: "Handoff instruction",
+      contactHandoffPlaceholder:
+        "e.g. Update the USB monthly; if something happens, give it to the lawyer.",
+      addContact: "Add contact",
+      noContacts: "No trusted contacts yet.",
+      noContactDetails: "No contact details",
+      contactSaveFailed: "Could not save contact.",
+      usbTitle: "USB backup reminder",
+      usbDesc:
+        "While the app is open, shows a notification when the interval since your last USB copy has elapsed.",
+      usbEnable: "Enable USB reminder",
+      usbInterval: "Interval (days)",
+      usbMessage: "Notification text",
+      usbLastExport: "Last USB / export mark",
+      usbNever: "Not yet",
+      usbMarkDone: "I just copied to USB",
+      usbSaved: "USB reminder saved.",
+      usbMarked: "Last copy time updated.",
+      usbSaveFailed: "Could not save.",
+      usbNote:
+        "Notifications only appear while the desktop app is running. No internet required.",
+    },
+    cloud: {
+      title: "Pro Cloud",
+      subtitle:
+        "Encrypted cloud backup and dead-man email. The server cannot read your vault — only your PIN unlocks it.",
+      unconfigured:
+        "Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.",
+      authHint:
+        "The cloud account is separate from your device PIN. Sign in to upload backups and check in.",
+      email: "Email",
+      password: "Password",
+      signIn: "Sign in",
+      signUp: "Create account",
+      needAccount: "No account? Sign up",
+      haveAccount: "Already have an account? Sign in",
+      confirmSent: "If a confirmation email was sent, check your inbox.",
+      signedInAs: "Signed in as",
+      signOut: "Sign out of cloud",
+      backupTitle: "Encrypted cloud backup",
+      backupDesc:
+        "Your local database is encrypted with your PIN session key and uploaded to private Storage.",
+      upload: "Upload to cloud",
+      download: "Download & decrypt (.db)",
+      lastBackup: "Last cloud backup",
+      packFailed: "Could not build encrypted package.",
+      uploadOk: "Cloud backup uploaded.",
+      uploadFailed: "Upload failed.",
+      downloadOk: "Decrypted .db downloaded. Restore it from the Backup page.",
+      downloadFailed: "Download failed.",
+      decryptFailed: "Could not decrypt. Unlock with the same PIN that created this backup.",
+      checkinTitle: "Check-in (I'm alive)",
+      checkinDesc:
+        "Opening the app or uploading a backup also counts; an extra check-in resets the timer.",
+      lastCheckin: "Last check-in",
+      status: "Status",
+      checkinCta: "Check in now",
+      checkinOk: "Check-in saved.",
+      deadmanTitle: "Dead-man email",
+      deadmanDesc:
+        "When the period elapses, you get a warning first, then alert emails go to the list. Mail never includes secrets or vault contents.",
+      deadmanEnable: "Enable dead-man email",
+      inactivityDays: "Inactivity (days)",
+      warningDays: "Warn me first (days before)",
+      alertEmails: "Heir / trusted emails",
+      alertEmailsHint: "Comma-separated. These addresses are stored on the server (for mail).",
+      handoffNote: "Short instruction shown in the email",
+      handoffPlaceholder:
+        "e.g. Check the USB or call my lawyer. Cloud backup is on my account.",
+      deadmanSaved: "Dead-man settings saved.",
+      privacyNote:
+        "Alert mail goes through the Edge Function (MAIL_PROVIDER: off / ses / resend). With no keys, mode is off — free, status still advances. See docs/CLOUD.md.",
     },
     moods: {
       mutlu: "Happy",
@@ -610,6 +882,13 @@ export const dictionaries: Record<Language, Dict> = {
       wrongPin: "Wrong PIN.",
       processing: "Processing...",
       note: "Your PIN is stored securely on your device and used for encryption. If you forget the PIN, the data cannot be accessed.",
+      forgotPin: "Forgot PIN — reset vault",
+      resetWarning:
+        "This permanently deletes all local data (database, videos). It cannot be undone.",
+      resetConfirmLabel: "Type RESET LEGACY to confirm",
+      resetSubmit: "Delete everything and reset",
+      resetting: "Resetting...",
+      resetFailed: "Reset failed.",
     },
     landing: {
       tagline: "Fully local · Encrypted · Secure",

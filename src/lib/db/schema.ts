@@ -208,6 +208,22 @@ export const calendarGroups = sqliteTable(
   (table) => [primaryKey({ columns: [table.memoryId, table.groupId] })],
 );
 
+/** Pro: offline handoff contacts who hold a USB / package copy */
+export const trustedContacts = sqliteTable("trusted_contacts", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  notes: text("notes"),
+  handoffInstruction: text("handoff_instruction"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
+
 export type Beneficiary = typeof beneficiaries.$inferSelect;
 export type NewBeneficiary = typeof beneficiaries.$inferInsert;
 export type BeneficiaryGroup = typeof beneficiaryGroups.$inferSelect;
@@ -217,3 +233,5 @@ export type Message = typeof messages.$inferSelect;
 export type NewMessage = typeof messages.$inferInsert;
 export type CalendarMemory = typeof calendarMemories.$inferSelect;
 export type NewCalendarMemory = typeof calendarMemories.$inferInsert;
+export type TrustedContact = typeof trustedContacts.$inferSelect;
+export type NewTrustedContact = typeof trustedContacts.$inferInsert;
