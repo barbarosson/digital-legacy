@@ -68,19 +68,30 @@ Header: x-deadman-secret: <DEADMAN_CRON_SECRET>
 
 Options:
 
-1. **Supabase Dashboard → Edge Functions → deadman-check → Schedules** (preferred)
-2. External cron (GitHub Actions, Cloudflare Worker, etc.) with the same POST
+1. **GitHub Actions** (repo): `.github/workflows/deadman-cron.yml` — daily `12:00 UTC` + manual `workflow_dispatch`
+2. Supabase Dashboard → Edge Functions → deadman-check → Schedules
+3. External cron with the same POST
+
+Linked project (app `.env.local`): `https://itvrvouaxcutpetyzhvg.supabase.co`
 
 Response includes `mailProvider` so you can confirm which backend ran.
 
 ### Ops checklist
 
-1. Deploy function: `supabase functions deploy deadman-check`
-2. Set secrets: `DEADMAN_CRON_SECRET`, plus SES or Resend as needed
-3. Enable dead-man in the app (Pro Cloud) and save heir emails
-4. Check in once so `last_checkin_at` is fresh
-5. Trigger the function manually once; expect `checked` ≥ 1 when enabled
-6. In the app UI, the Pro Cloud section shows days until warning / heir alert
+1. Deploy function: `deadman-check` (MCP / `supabase functions deploy deadman-check`) — **done on linked project**
+2. Set **matching** `DEADMAN_CRON_SECRET` in:
+   - Supabase → Project Settings → Edge Functions → Secrets
+   - GitHub repo secret `DEADMAN_CRON_SECRET` (Actions cron) — **GitHub side set**
+   - Local copy (gitignored): `.env.deadman.local`
+3. Optional mail: `RESEND_API_KEY` (+ `RESEND_FROM`) or SES keys; without them `MAIL_PROVIDER` stays **off** (status still advances, no email)
+4. Enable dead-man in the app (Pro Cloud) and save heir emails
+5. Check in once so `last_checkin_at` is fresh
+6. Trigger Actions workflow **Dead-man cron** once (or POST the function); expect `checked` ≥ 1 when enabled
+7. In the app UI, the Pro Cloud section shows days until warning / heir alert
+
+### Auth note
+
+Pro Cloud sign-up uses this project’s Auth. If email confirmation is required in Dashboard → Authentication, confirm the inbox before Sign in works.
 
 ## SQL
 

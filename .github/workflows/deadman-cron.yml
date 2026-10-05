@@ -1,0 +1,30 @@
+name: Dead-man cron
+
+# Daily Pro Cloud inactivity check (Digital Legacy).
+# Requires repo secret DEADMAN_CRON_SECRET (must match Supabase Edge Function secret).
+
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+jobs:
+  deadman-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Invoke deadman-check
+        env:
+          DEADMAN_CRON_SECRET: ${{ secrets.DEADMAN_CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DEADMAN_CRON_SECRET:-}" ]; then
+            echo "Missing GitHub secret DEADMAN_CRON_SECRET"
+            exit 1
+          fi
+          CODE=$(curl -sS -o /tmp/deadman.json -w "%{http_code}" \
+            -X POST "https://itvrvouaxcutpetyzhvg.supabase.co/functions/v1/deadman-check" \
+            -H "Content-Type: application/json" \
+            -H "x-deadman-secret: ${DEADMAN_CRON_SECRET}")
+          echo "HTTP $CODE"
+          cat /tmp/deadman.json
+          test "$CODE" = "200"
