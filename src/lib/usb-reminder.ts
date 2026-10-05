@@ -67,6 +67,16 @@ export async function getUsbReminderSettings(): Promise<UsbReminderSettings> {
   };
 }
 
+/** True when enabled and interval days have passed since last export (or never). */
+export function isUsbReminderDue(settings: UsbReminderSettings): boolean {
+  if (!settings.enabled) return false;
+  if (!settings.lastExportedAt) return true;
+  const last = Date.parse(settings.lastExportedAt);
+  if (!Number.isFinite(last)) return true;
+  const dueAt = last + settings.intervalDays * 24 * 60 * 60 * 1000;
+  return Date.now() >= dueAt;
+}
+
 export async function setUsbReminderSettings(
   settings: Omit<UsbReminderSettings, "lastExportedAt">,
 ) {

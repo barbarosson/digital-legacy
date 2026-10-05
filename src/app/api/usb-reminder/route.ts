@@ -3,6 +3,7 @@ import { requireUnlockedSession } from "@/lib/auth/guard";
 import { canUse } from "@/lib/entitlements";
 import {
   getUsbReminderSettings,
+  isUsbReminderDue,
   markUsbExportDone,
   setUsbReminderSettings,
 } from "@/lib/usb-reminder";
@@ -19,7 +20,10 @@ export async function GET() {
   }
 
   const settings = await getUsbReminderSettings();
-  return NextResponse.json(settings);
+  return NextResponse.json({
+    ...settings,
+    due: isUsbReminderDue(settings),
+  });
 }
 
 export async function PUT(request: Request) {

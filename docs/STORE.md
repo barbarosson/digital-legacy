@@ -21,6 +21,7 @@ Already in the repo:
 - English default UI and product name
 - Isolated GitHub: https://github.com/barbarosson/digital-legacy (public)
 - Phase 0 stability: Electron HTTP cookies, sealed session keys, PIN rate limit, change PIN / factory reset, About
+- **Phase 1 Pro complete (local):** cloud vault with videos + restore, trusted contact edit/encrypt/export + GDPR + handoff summary, USB banner, deadman status UI, Store IAP skeleton (demo codes off in Store builds)
 - Privacy policy: `docs/PRIVACY_POLICY.md` + public HTML: `docs/privacy/index.html`
 - App icons: `build/icon.ico`, `public/icon-256.png`, Store listing `public/store-listing-300.png`
 - Screenshots (1920×1200): `docs/screenshots/*-1920.png`
@@ -36,13 +37,14 @@ Monetization (local for now):
 
 - Free: core vault (PIN, assets, heirs, messages, calendar, delivery, backup)
 - Pro: trusted contacts + USB export reminders + **Pro Cloud** (encrypted backup + dead-man email)
-- Early unlock codes: `DIGITAL-LEGACY-PRO` / `DL-PRO-2026` (replace with Store IAP later)
+- Early unlock codes: `DIGITAL-LEGACY-PRO` / `DL-PRO-2026` (sideload / NSIS only)
+- Store / MSIX: `DIGITAL_LEGACY_STORE_BUILD` / `process.windowsStore` disables demo codes; IAP product id `STORE_PRO_PRODUCT_ID` (default `digital_legacy_pro`) — wire `Windows.Services.Store` in Electron when the add-on exists
 - Cloud setup: [docs/CLOUD.md](CLOUD.md)
 
 Still needed before upload:
 
 - Partner Center developer account + app identity (Phase 3)
-- Wire Pro unlock to Microsoft Store in-app purchase when the account exists
+- Create the Pro add-on and finish StoreContext purchase UI
 
 ## Phase 3 — When the Store account arrives
 
@@ -61,5 +63,6 @@ STORE_PUBLISHER_DISPLAY=...
 6. Run the Windows App Certification Kit.
 7. Upload the package. Paste the privacy URL. Age rating: Productivity. Notes for certification: full-trust desktop app because it runs a local Node server, SQLite, camera, and notifications. Community is off.
 8. Screenshots must show the English UI.
+9. Create durable Pro add-on (`digital_legacy_pro` or set `STORE_PRO_PRODUCT_ID`) and connect StoreContext in Electron.
 
 Do not add Community to the Store listing until in-app report and block exist.

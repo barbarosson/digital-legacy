@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { BACKUPS_DIR, DB_PATH } from "@/lib/paths";
+import { BACKUPS_DIR, DB_PATH, VIDEOS_DIR } from "@/lib/paths";
 import {
   checkpointDatabase,
   closeCachedConnection,
@@ -102,6 +102,38 @@ export function restoreDatabaseFromBuffer(buffer: Buffer) {
   fs.renameSync(tempPath, DB_PATH);
   removeWalFiles();
   reloadDatabase();
+}
+
+/**
+ * Replace on-disk calendar media with files from a cloud vault archive.
+ * Existing videos are moved aside under data/backups/ before overwrite.
+ */
+export function restoreVideosFromMap(videos: Map<string, Buffer>) {
+  ensureBackupsDir();
+
+  if (!fs.existsSync(VIDEOS_DIR)) {
+    fs.mkdirSync(VIDEOS_DIR, { recursive: true });
+  }
+
+  const existing = fs
+    .readdirSync(VIDEOS_DIR)
+    .filter((name) => fs.statSync(path.join(VIDEOS_DIR, name)).isFile());
+
+  if (existing.length > 0) {
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const aside = path.join(BACKUPS_DIR, `videos-oncesi-${stamp}`);
+    fs.mkdirSync(aside, { recursive: true });
+    for (const name of existing) {
+      fs.renameSync(path.join(VIDEOS_DIR, name), path.join(aside, name));
+    }
+  }
+
+  for (const [name, buf] of videos) {
+    if (!name || name.includes("..") || name.includes("/") || name.includes("\\")) {
+      continue;
+    }
+    fs.writeFileSync(path.join(VIDEOS_DIR, name), buf);
+  }
 }
 
 export function formatBytes(bytes: number): string {

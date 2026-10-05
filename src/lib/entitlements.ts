@@ -1,6 +1,10 @@
 import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { appSettings } from "@/lib/db/schema";
+import {
+  allowDemoUnlockCodes,
+  probeStoreProLicense,
+} from "@/lib/iap/store-purchase";
 
 export type Plan = "free" | "pro";
 
@@ -34,8 +38,9 @@ export const PRO_FEATURES: Record<
 
 const PLAN_KEY = "license_plan";
 const UNLOCKED_AT_KEY = "pro_unlocked_at";
+const UNLOCK_SOURCE_KEY = "pro_unlock_source";
 
-/** Demo / early unlock codes. Replace with Store IAP later. */
+/** Demo / early unlock codes. Disabled in Store builds. */
 const VALID_UNLOCK_CODES = new Set([
   "DIGITAL-LEGACY-PRO",
   "DL-PRO-2026",
@@ -76,10 +81,15 @@ export async function canUse(_feature: ProFeature): Promise<boolean> {
 export async function getEntitlement() {
   const plan = await getPlan();
   const unlockedAt = await getSetting(UNLOCKED_AT_KEY);
+  const unlockSource = await getSetting(UNLOCK_SOURCE_KEY);
+  const store = await probeStoreProLicense();
   return {
     plan,
     isPro: plan === "pro",
     unlockedAt,
+    unlockSource: unlockSource as "code" | "store" | "force" | null,
+    demoCodesAllowed: allowDemoUnlockCodes(),
+    store,
     features: {
       trusted_contacts: plan === "pro",
       usb_export_reminder: plan === "pro",
@@ -93,6 +103,9 @@ export async function unlockProWithCode(rawCode: string): Promise<
   | { ok: true; plan: Plan }
   | { ok: false; error: string }
 > {
+  if (!allowDemoUnlockCodes()) {
+    return { ok: false, error: "codes_disabled" };
+  }
   const code = rawCode.trim().toUpperCase();
   if (!code) {
     return { ok: false, error: "empty" };
@@ -102,7 +115,34 @@ export async function unlockProWithCode(rawCode: string): Promise<
   }
   await setSetting(PLAN_KEY, "pro");
   await setSetting(UNLOCKED_AT_KEY, new Date().toISOString());
+  await setSetting(UNLOCK_SOURCE_KEY, "code");
   return { ok: true, plan: "pro" };
+}
+
+/**
+ * Apply a verified Store license (or env bridge during development).
+ * Real Windows StoreContext wiring lands in Electron when Partner Center IAP exists.
+ */
+export async function unlockProFromStore(): Promise<
+  | {
+      ok: true;
+      plan: Plan;
+      store: Awaited<ReturnType<typeof probeStoreProLicense>>;
+    }
+  | {
+      ok: false;
+      error: string;
+      store: Awaited<ReturnType<typeof probeStoreProLicense>>;
+    }
+> {
+  const store = await probeStoreProLicense();
+  if (!store.licensed) {
+    return { ok: false, error: store.reason, store };
+  }
+  await setSetting(PLAN_KEY, "pro");
+  await setSetting(UNLOCKED_AT_KEY, new Date().toISOString());
+  await setSetting(UNLOCK_SOURCE_KEY, "store");
+  return { ok: true, plan: "pro", store };
 }
 
 /** Dev / support helper — not exposed in UI by default. */
@@ -110,5 +150,6 @@ export async function setPlan(plan: Plan) {
   await setSetting(PLAN_KEY, plan);
   if (plan === "pro") {
     await setSetting(UNLOCKED_AT_KEY, new Date().toISOString());
+    await setSetting(UNLOCK_SOURCE_KEY, "force");
   }
 }

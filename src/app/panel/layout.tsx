@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { NotificationBell } from "@/components/social/notification-bell";
+import { UsbReminderBanner } from "@/components/pro/usb-reminder-banner";
 import { isCommunityEnabled } from "@/lib/features";
 import { SocialAuthProvider } from "@/lib/social/auth-context";
 import { isPinConfigured, isSessionFullyUnlocked } from "@/lib/auth/session";
@@ -30,7 +31,10 @@ export default async function PanelLayout({
             <NotificationBell />
           </header>
         )}
-        <div className="mx-auto max-w-5xl px-8 py-8">{children}</div>
+        <div className="mx-auto max-w-5xl px-8 py-8">
+          <UsbReminderBanner />
+          {children}
+        </div>
       </main>
     </div>
   );

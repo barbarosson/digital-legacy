@@ -131,6 +131,13 @@ export const dictionaries: Record<Language, Dict> = {
         "Mağaza satın alımı gelene kadar erken erişim kodu kullanın. Örnek: DIGITAL-LEGACY-PRO",
       unlockSuccess: "Pro açıldı. Yeni özellikler kullanıma hazır.",
       unlockFailed: "Kod geçersiz.",
+      storeTitle: "Microsoft Store",
+      storeHint:
+        "Store IAP bağlanınca buradan Pro satın alınır / geri yüklenir. Şimdilik iskelet — Partner Center hesabı gerekir.",
+      storeRestore: "Store lisansını dene / geri yükle",
+      storeRestoreFailed: "Store lisansı bulunamadı veya henüz bağlı değil.",
+      handoffHtml: "Handoff özeti (HTML / yazdır)",
+      handoffTxt: "Handoff özeti (TXT)",
       trustedTitle: "Güvenilir kişi",
       trustedDesc:
         "Ölüm / kayıp durumunda USB paketini tutacak kişi. Uygulama ona otomatik yazmaz — siz düzenli kopya bırakırsınız.",
@@ -140,10 +147,19 @@ export const dictionaries: Record<Language, Dict> = {
       contactHandoff: "Teslim talimatı",
       contactHandoffPlaceholder:
         "Örn. Her ay USB'yi güncelle; bir şey olursa avukata ver.",
+      contactNotes: "Notlar (şifreli)",
       addContact: "Kişi ekle",
+      editContact: "Düzenle",
+      saveContact: "Kaydet",
+      cancelEdit: "İptal",
+      exportContacts: "Kişileri dışa aktar (JSON)",
       noContacts: "Henüz güvenilir kişi yok.",
       noContactDetails: "İletişim bilgisi yok",
       contactSaveFailed: "Kişi kaydedilemedi.",
+      usbBannerTitle: "USB yedek zamanı",
+      usbBannerCta: "Yedekleme sayfasına git",
+      usbBannerDismiss: "Sonra",
+      usbBannerMark: "Az önce kopyaladım",
       usbTitle: "USB yedek hatırlatması",
       usbDesc:
         "Uygulama açıkken, son USB kopyasından beri geçen süre dolunca bildirim gösterir.",
@@ -178,14 +194,20 @@ export const dictionaries: Record<Language, Dict> = {
       signOut: "Buluttan çık",
       backupTitle: "Şifreli bulut yedek",
       backupDesc:
-        "Yerel veritabanı PIN oturum anahtarıyla şifrelenir ve özel Storage'a yüklenir.",
+        "Veritabanı ve takvim videoları bir arşive paketlenir, PIN oturum anahtarıyla şifrelenir ve özel Storage'a yüklenir.",
       upload: "Buluta yükle",
-      download: "İndir ve çöz (.db)",
+      download: "İndir ve çöz",
+      restoreNow: "Bu cihaza geri yükle",
+      restoreConfirm:
+        "Bulut yedeği bu cihazdaki veritabanı ve videoların üzerine yazılacak. Devam edilsin mi? (Önce otomatik yerel yedek alınır.)",
+      restoreOk: "Bulut yedeği geri yüklendi. PIN ile tekrar giriş yapın.",
+      restoreFailed: "Buluttan geri yükleme başarısız.",
       lastBackup: "Son bulut yedeği",
       packFailed: "Şifreli paket oluşturulamadı.",
-      uploadOk: "Bulut yedeği yüklendi.",
+      uploadOk: "Bulut yedeği yüklendi (veritabanı + videolar).",
       uploadFailed: "Yükleme başarısız.",
-      downloadOk: "Çözülmüş .db indirildi. Yedekleme sayfasından geri yükleyin.",
+      downloadOk:
+        "Çözülmüş arşiv indirildi (.zip veya eski .db). İsterseniz Yedekleme sayfasından da geri yükleyebilirsiniz.",
       downloadFailed: "İndirme başarısız.",
       decryptFailed: "Çözülemedi. Bu yedeği oluşturan PIN ile giriş yapın.",
       checkinTitle: "Check-in (hayattayım)",
@@ -207,6 +229,11 @@ export const dictionaries: Record<Language, Dict> = {
       handoffPlaceholder:
         "Örn. USB'ye bakın veya avukatımla görüşün. Bulut yedeği hesabımda.",
       deadmanSaved: "Dead-man ayarları kaydedildi.",
+      deadmanStatusDays: "Check-in’den beri (gün)",
+      deadmanStatusWarnIn: "Uyarıya kalan",
+      deadmanStatusTriggerIn: "Mirasçı mailine kalan",
+      deadmanOpsNote:
+        "E-posta gönderimi Supabase Edge Function + cron ile çalışır (MAIL_PROVIDER: off/ses/resend). Detay: docs/CLOUD.md.",
       privacyNote:
         "Mailler Edge Function ile gider (MAIL_PROVIDER: off / ses / resend). Anahtar yoksa off — ücret yok, durum yine ilerler. Detay: docs/CLOUD.md.",
     },
@@ -741,6 +768,13 @@ export const dictionaries: Record<Language, Dict> = {
         "Until Store purchases ship, use an early-access code. Example: DIGITAL-LEGACY-PRO",
       unlockSuccess: "Pro unlocked. New features are ready.",
       unlockFailed: "Invalid code.",
+      storeTitle: "Microsoft Store",
+      storeHint:
+        "When Store IAP is connected, buy or restore Pro here. Skeleton for now — Partner Center account required.",
+      storeRestore: "Try / restore Store license",
+      storeRestoreFailed: "No Store license found, or IAP is not wired yet.",
+      handoffHtml: "Handoff summary (HTML / print)",
+      handoffTxt: "Handoff summary (TXT)",
       trustedTitle: "Trusted contact",
       trustedDesc:
         "The person who keeps the USB package if you die or disappear. The app does not message them — you leave updated copies.",
@@ -750,10 +784,19 @@ export const dictionaries: Record<Language, Dict> = {
       contactHandoff: "Handoff instruction",
       contactHandoffPlaceholder:
         "e.g. Update the USB monthly; if something happens, give it to the lawyer.",
+      contactNotes: "Notes (encrypted)",
       addContact: "Add contact",
+      editContact: "Edit",
+      saveContact: "Save",
+      cancelEdit: "Cancel",
+      exportContacts: "Export contacts (JSON)",
       noContacts: "No trusted contacts yet.",
       noContactDetails: "No contact details",
       contactSaveFailed: "Could not save contact.",
+      usbBannerTitle: "Time for a USB backup",
+      usbBannerCta: "Go to Backup",
+      usbBannerDismiss: "Later",
+      usbBannerMark: "I just copied",
       usbTitle: "USB backup reminder",
       usbDesc:
         "While the app is open, shows a notification when the interval since your last USB copy has elapsed.",
@@ -788,14 +831,20 @@ export const dictionaries: Record<Language, Dict> = {
       signOut: "Sign out of cloud",
       backupTitle: "Encrypted cloud backup",
       backupDesc:
-        "Your local database is encrypted with your PIN session key and uploaded to private Storage.",
+        "Your database and calendar videos are packed into an archive, encrypted with your PIN session key, and uploaded to private Storage.",
       upload: "Upload to cloud",
-      download: "Download & decrypt (.db)",
+      download: "Download & decrypt",
+      restoreNow: "Restore to this device",
+      restoreConfirm:
+        "This will overwrite the database and videos on this device with the cloud vault. Continue? (An automatic local backup is taken first.)",
+      restoreOk: "Cloud vault restored. Unlock again with your PIN.",
+      restoreFailed: "Cloud restore failed.",
       lastBackup: "Last cloud backup",
       packFailed: "Could not build encrypted package.",
-      uploadOk: "Cloud backup uploaded.",
+      uploadOk: "Cloud backup uploaded (database + videos).",
       uploadFailed: "Upload failed.",
-      downloadOk: "Decrypted .db downloaded. Restore it from the Backup page.",
+      downloadOk:
+        "Decrypted archive downloaded (.zip or legacy .db). You can also restore from the Backup page.",
       downloadFailed: "Download failed.",
       decryptFailed: "Could not decrypt. Unlock with the same PIN that created this backup.",
       checkinTitle: "Check-in (I'm alive)",
@@ -817,6 +866,11 @@ export const dictionaries: Record<Language, Dict> = {
       handoffPlaceholder:
         "e.g. Check the USB or call my lawyer. Cloud backup is on my account.",
       deadmanSaved: "Dead-man settings saved.",
+      deadmanStatusDays: "Days since check-in",
+      deadmanStatusWarnIn: "Days until warning",
+      deadmanStatusTriggerIn: "Days until heir alert",
+      deadmanOpsNote:
+        "Email delivery runs via the Supabase Edge Function + cron (MAIL_PROVIDER: off/ses/resend). See docs/CLOUD.md.",
       privacyNote:
         "Alert mail goes through the Edge Function (MAIL_PROVIDER: off / ses / resend). With no keys, mode is off — free, status still advances. See docs/CLOUD.md.",
     },

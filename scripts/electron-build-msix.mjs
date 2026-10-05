@@ -31,6 +31,8 @@ execSync(
     env: {
       ...process.env,
       CSC_IDENTITY_AUTO_DISCOVERY: "false",
+      // Disable demo unlock codes inside Store packages.
+      DIGITAL_LEGACY_STORE_BUILD: "true",
     },
   },
 );

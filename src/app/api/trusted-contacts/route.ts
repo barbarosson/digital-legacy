@@ -17,7 +17,7 @@ export async function GET() {
     );
   }
 
-  const contacts = await listTrustedContacts();
+  const contacts = await listTrustedContacts(session.dataKey);
   return NextResponse.json({ contacts });
 }
 
@@ -44,13 +44,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Name is required." }, { status: 400 });
   }
 
-  const contact = await createTrustedContact({
-    name: body.name,
-    email: body.email ?? null,
-    phone: body.phone ?? null,
-    notes: body.notes ?? null,
-    handoffInstruction: body.handoffInstruction ?? null,
-  });
+  const contact = await createTrustedContact(
+    {
+      name: body.name,
+      email: body.email ?? null,
+      phone: body.phone ?? null,
+      notes: body.notes ?? null,
+      handoffInstruction: body.handoffInstruction ?? null,
+    },
+    session.dataKey,
+  );
 
   return NextResponse.json({ contact }, { status: 201 });
 }

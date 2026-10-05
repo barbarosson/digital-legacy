@@ -4,13 +4,19 @@ Requires **Digital Legacy Pro** unlock and Supabase env vars.
 
 ## What it does
 
-1. **Encrypted cloud backup** — local SQLite is packed with the PIN session key (AES-256-GCM) and uploaded to private Storage bucket `dm-vaults`. The server cannot read vault contents.
+1. **Encrypted cloud backup** — local SQLite **and calendar videos** are packed into a ZIP (`dlvault`), encrypted with the PIN session key (AES-256-GCM, `DLENC1`), and uploaded to private Storage bucket `dm-vaults`. The server cannot read vault contents. Videos stay PIN-encrypted inside the archive as well.
 2. **Check-in** — updates `last_checkin_at` (also happens on successful upload).
 3. **Dead-man email** — Edge Function `deadman-check` warns the owner, then emails heir addresses. Mail never includes secrets.
+
+Legacy backups that were **database-only** still decrypt and restore.
 
 ## App UI
 
 Settings → Digital Legacy Pro → **Pro Cloud** (after Pro unlock).
+
+- **Upload to cloud** — pack DB + videos → encrypt → Storage
+- **Download & decrypt** — get a `.zip` (or legacy `.db`) without overwriting the live vault
+- **Restore to this device** — apply the latest cloud vault live (auto local backup first; then re-unlock with PIN)
 
 ## Env (app)
 
@@ -53,18 +59,47 @@ Supabase does **not** send arbitrary mail by itself. The function uses a pluggab
 
 ## Cron
 
+Schedule a daily (or hourly) call:
+
 ```
 POST https://<project>.supabase.co/functions/v1/deadman-check
 Header: x-deadman-secret: <DEADMAN_CRON_SECRET>
 ```
 
+Options:
+
+1. **Supabase Dashboard → Edge Functions → deadman-check → Schedules** (preferred)
+2. External cron (GitHub Actions, Cloudflare Worker, etc.) with the same POST
+
 Response includes `mailProvider` so you can confirm which backend ran.
+
+### Ops checklist
+
+1. Deploy function: `supabase functions deploy deadman-check`
+2. Set secrets: `DEADMAN_CRON_SECRET`, plus SES or Resend as needed
+3. Enable dead-man in the app (Pro Cloud) and save heir emails
+4. Check in once so `last_checkin_at` is fresh
+5. Trigger the function manually once; expect `checked` ≥ 1 when enabled
+6. In the app UI, the Pro Cloud section shows days until warning / heir alert
 
 ## SQL
 
 See `supabase/migrations/0002_cloud.sql` (applied to the linked project).
 
+## Archive format
+
+After decrypting `.dlenc`:
+
+| Kind | Detection | Contents |
+|------|-----------|----------|
+| `dlvault` (current) | ZIP (`PK…`) | `manifest.json`, `dijital-miras.db`, `videos/*` |
+| `legacy-db` | SQLite header | Database only |
+
+## Size note
+
+Supabase Storage free projects often cap single-object size (~50 MB). Large video libraries may need a paid Storage plan or selective export.
+
 ## Restore flow
 
-1. Download & decrypt → `.db` file
-2. Backup page → Restore that `.db`
+1. **In-app:** Pro Cloud → **Restore to this device** (recommended)
+2. **Manual:** Download & decrypt → Backup page → Restore `.db` (videos from the `.zip` can be copied into `data/videos/` if needed)

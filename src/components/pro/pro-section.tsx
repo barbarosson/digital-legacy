@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Crown, HardDrive, Trash2, UserPlus, Users } from "lucide-react";
+import { Crown, Download, HardDrive, Pencil, Trash2, UserPlus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,13 @@ type Entitlement = {
   plan: "free" | "pro";
   isPro: boolean;
   unlockedAt: string | null;
+  demoCodesAllowed?: boolean;
+  store?: {
+    storeBuild: boolean;
+    productId: string;
+    licensed: boolean;
+    reason: string;
+  };
 };
 
 type TrustedContact = {
@@ -47,8 +54,10 @@ export function ProSection() {
     name: "",
     email: "",
     phone: "",
+    notes: "",
     handoffInstruction: "",
   });
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [contactError, setContactError] = useState("");
   const [savingContact, setSavingContact] = useState(false);
 
@@ -116,23 +125,59 @@ export function ProSection() {
     }
     setUnlockSuccess(t("pro.unlockSuccess"));
     setCode("");
-    setEntitlement({
-      plan: data.plan,
-      isPro: data.isPro,
-      unlockedAt: data.unlockedAt,
-    });
+    setEntitlement(data as Entitlement);
     await Promise.all([loadContacts(), loadUsb()]);
+  }
+
+  async function restoreStorePurchase() {
+    setUnlocking(true);
+    setUnlockError("");
+    setUnlockSuccess("");
+    const res = await fetch("/api/entitlements", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ storePurchase: true }),
+    });
+    const data = await res.json();
+    setUnlocking(false);
+    if (!res.ok) {
+      setUnlockError(data.error ?? t("pro.storeRestoreFailed"));
+      return;
+    }
+    setUnlockSuccess(t("pro.unlockSuccess"));
+    setEntitlement(data as Entitlement);
+    await Promise.all([loadContacts(), loadUsb()]);
+  }
+
+  async function downloadHandoff(format: "html" | "txt") {
+    const res = await fetch(`/api/handoff-summary?format=${format}`);
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download =
+      format === "html"
+        ? "digital-legacy-handoff.html"
+        : "digital-legacy-handoff.txt";
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   async function addContact(e: React.FormEvent) {
     e.preventDefault();
     setSavingContact(true);
     setContactError("");
-    const res = await fetch("/api/trusted-contacts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(contactForm),
-    });
+
+    const isEdit = editingId !== null;
+    const res = await fetch(
+      isEdit ? `/api/trusted-contacts/${editingId}` : "/api/trusted-contacts",
+      {
+        method: isEdit ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contactForm),
+      },
+    );
     const data = await res.json();
     setSavingContact(false);
     if (!res.ok) {
@@ -143,15 +188,60 @@ export function ProSection() {
       name: "",
       email: "",
       phone: "",
+      notes: "",
       handoffInstruction: "",
     });
-    setContacts((prev) => [data.contact, ...prev]);
+    setEditingId(null);
+    if (isEdit) {
+      setContacts((prev) =>
+        prev.map((c) => (c.id === data.contact.id ? data.contact : c)),
+      );
+    } else {
+      setContacts((prev) => [data.contact, ...prev]);
+    }
+  }
+
+  function startEdit(c: TrustedContact) {
+    setEditingId(c.id);
+    setContactForm({
+      name: c.name,
+      email: c.email ?? "",
+      phone: c.phone ?? "",
+      notes: c.notes ?? "",
+      handoffInstruction: c.handoffInstruction ?? "",
+    });
+    setContactError("");
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setContactForm({
+      name: "",
+      email: "",
+      phone: "",
+      notes: "",
+      handoffInstruction: "",
+    });
+    setContactError("");
   }
 
   async function removeContact(id: number) {
     const res = await fetch(`/api/trusted-contacts/${id}`, { method: "DELETE" });
     if (!res.ok) return;
     setContacts((prev) => prev.filter((c) => c.id !== id));
+    if (editingId === id) cancelEdit();
+  }
+
+  async function exportContacts() {
+    const res = await fetch("/api/trusted-contacts/export");
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "trusted-contacts.json";
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   async function saveUsb(e: React.FormEvent) {
@@ -226,29 +316,64 @@ export function ProSection() {
           </div>
 
           {!isPro && (
-            <form onSubmit={handleUnlock} className="space-y-3">
-              <label className="mb-1.5 block text-sm text-slate-400">
-                {t("pro.unlockCode")}
-              </label>
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Input
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="DIGITAL-LEGACY-PRO"
-                  className="sm:max-w-xs"
-                />
-                <Button type="submit" disabled={unlocking || !code.trim()}>
-                  {unlocking ? t("common.saving") : t("pro.unlockCta")}
+            <div className="space-y-4">
+              {(entitlement?.demoCodesAllowed ?? true) && (
+                <form onSubmit={handleUnlock} className="space-y-3">
+                  <label className="mb-1.5 block text-sm text-slate-400">
+                    {t("pro.unlockCode")}
+                  </label>
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <Input
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      placeholder="DIGITAL-LEGACY-PRO"
+                      className="sm:max-w-xs"
+                    />
+                    <Button type="submit" disabled={unlocking || !code.trim()}>
+                      {unlocking ? t("common.saving") : t("pro.unlockCta")}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-slate-600">{t("pro.unlockHint")}</p>
+                </form>
+              )}
+              <div className="space-y-2">
+                <p className="text-sm text-slate-400">{t("pro.storeTitle")}</p>
+                <p className="text-xs text-slate-600">{t("pro.storeHint")}</p>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={unlocking}
+                  onClick={restoreStorePurchase}
+                >
+                  {t("pro.storeRestore")}
                 </Button>
               </div>
-              <p className="text-xs text-slate-600">{t("pro.unlockHint")}</p>
               {unlockError && (
                 <p className="text-sm text-rose-400">{unlockError}</p>
               )}
               {unlockSuccess && (
                 <p className="text-sm text-emerald-400">{unlockSuccess}</p>
               )}
-            </form>
+            </div>
+          )}
+          {isPro && (
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => downloadHandoff("html")}
+              >
+                <Download className="h-4 w-4" />
+                {t("pro.handoffHtml")}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => downloadHandoff("txt")}
+              >
+                {t("pro.handoffTxt")}
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -327,13 +452,54 @@ export function ProSection() {
                     placeholder={t("pro.contactHandoffPlaceholder")}
                   />
                 </div>
+                <div>
+                  <label className="mb-1.5 block text-sm text-slate-400">
+                    {t("pro.contactNotes")}
+                  </label>
+                  <Textarea
+                    value={contactForm.notes}
+                    onChange={(e) =>
+                      setContactForm({
+                        ...contactForm,
+                        notes: e.target.value,
+                      })
+                    }
+                  />
+                </div>
                 {contactError && (
                   <p className="text-sm text-rose-400">{contactError}</p>
                 )}
-                <Button type="submit" disabled={savingContact}>
-                  <UserPlus className="mr-1.5 h-4 w-4" />
-                  {savingContact ? t("common.saving") : t("pro.addContact")}
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="submit" disabled={savingContact}>
+                    {editingId === null ? (
+                      <UserPlus className="mr-1.5 h-4 w-4" />
+                    ) : null}
+                    {savingContact
+                      ? t("common.saving")
+                      : editingId === null
+                        ? t("pro.addContact")
+                        : t("pro.saveContact")}
+                  </Button>
+                  {editingId !== null && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={cancelEdit}
+                    >
+                      {t("pro.cancelEdit")}
+                    </Button>
+                  )}
+                  {contacts.length > 0 && (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={exportContacts}
+                    >
+                      <Download className="mr-1.5 h-4 w-4" />
+                      {t("pro.exportContacts")}
+                    </Button>
+                  )}
+                </div>
               </form>
 
               {contacts.length === 0 ? (
@@ -356,16 +522,30 @@ export function ProSection() {
                             {c.handoffInstruction}
                           </p>
                         )}
+                        {c.notes && (
+                          <p className="mt-1 text-sm text-slate-500">{c.notes}</p>
+                        )}
                       </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeContact(c.id)}
-                        aria-label={t("common.delete")}
-                      >
-                        <Trash2 className="h-4 w-4 text-rose-400" />
-                      </Button>
+                      <div className="flex shrink-0 gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => startEdit(c)}
+                          aria-label={t("pro.editContact")}
+                        >
+                          <Pencil className="h-4 w-4 text-slate-400" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeContact(c.id)}
+                          aria-label={t("common.delete")}
+                        >
+                          <Trash2 className="h-4 w-4 text-rose-400" />
+                        </Button>
+                      </div>
                     </li>
                   ))}
                 </ul>

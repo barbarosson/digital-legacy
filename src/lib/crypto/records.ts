@@ -81,3 +81,32 @@ export function encryptCalendarInput(
     location: encryptField(input.location?.trim() || null, dataKey),
   };
 }
+
+export function decryptTrustedContactFields<
+  T extends {
+    notes?: string | null;
+    handoffInstruction?: string | null;
+  },
+>(row: T, dataKey: Buffer): T {
+  return {
+    ...row,
+    notes: decryptField(row.notes, dataKey),
+    handoffInstruction: decryptField(row.handoffInstruction, dataKey),
+  };
+}
+
+export function encryptTrustedContactInput(
+  input: {
+    notes?: string | null;
+    handoffInstruction?: string | null;
+  },
+  dataKey: Buffer,
+) {
+  return {
+    notes: encryptField(input.notes?.trim() || null, dataKey),
+    handoffInstruction: encryptField(
+      input.handoffInstruction?.trim() || null,
+      dataKey,
+    ),
+  };
+}

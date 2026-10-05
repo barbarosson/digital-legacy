@@ -32,7 +32,7 @@ export async function PUT(request: Request, { params }: Params) {
     return NextResponse.json({ error: "Name is required." }, { status: 400 });
   }
 
-  const contact = await updateTrustedContact(Number(id), body);
+  const contact = await updateTrustedContact(Number(id), body, session.dataKey);
   if (!contact) {
     return NextResponse.json({ error: "Contact not found." }, { status: 404 });
   }

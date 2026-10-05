@@ -48,6 +48,11 @@ function getFreePort() {
 }
 
 function buildServerEnv(port) {
+  const storeBuild =
+    Boolean(process.windowsStore) ||
+    process.env.DIGITAL_LEGACY_STORE_BUILD === "true" ||
+    process.env.DIGITAL_LEGACY_STORE_BUILD === "1";
+
   return {
     ...process.env,
     NODE_ENV: "production",
@@ -59,6 +64,8 @@ function buildServerEnv(port) {
     // Local Next server is HTTP — Secure cookies must stay off.
     ELECTRON_HTTP: "1",
     COOKIE_SECURE: "false",
+    // Store packages must not accept demo unlock codes.
+    DIGITAL_LEGACY_STORE_BUILD: storeBuild ? "true" : "false",
   };
 }
 

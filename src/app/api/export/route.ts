@@ -19,6 +19,7 @@ import {
   legacyAssets,
   messages,
 } from "@/lib/db/schema";
+import { listTrustedContacts } from "@/lib/trusted-contacts";
 import { markUsbExportDone } from "@/lib/usb-reminder";
 
 export async function POST() {
@@ -27,6 +28,7 @@ export async function POST() {
   const { dataKey } = session;
 
   const db = getDb();
+  const pro = await isPro();
 
   const [beneficiaryRows, groupRows, assetRows, messageRows, memoryRows] =
     await Promise.all([
@@ -39,6 +41,10 @@ export async function POST() {
         .from(calendarMemories)
         .orderBy(desc(calendarMemories.entryDate)),
     ]);
+
+  const trustedContactRows = pro
+    ? await listTrustedContacts(dataKey)
+    : [];
 
   const decryptedBeneficiaries = beneficiaryRows.map((row) =>
     decryptBeneficiaryFields(row, dataKey),
@@ -69,6 +75,7 @@ export async function POST() {
         assets: decryptedAssets,
         messages: decryptedMessages,
         calendarMemories: decryptedMemories,
+        ...(pro ? { trustedContacts: trustedContactRows } : {}),
       },
       null,
       2,
@@ -80,6 +87,7 @@ export async function POST() {
     "",
     "This archive contains your personal data in readable (decrypted) form:",
     "- data.json: heirs, groups, assets, messages, and calendar memories",
+    ...(pro ? ["- data.json also includes Pro trusted contacts (decrypted)"] : []),
     "- videos/: calendar daily videos",
     "- thumbnails/: video thumbnails (decrypted for this export)",
     "",

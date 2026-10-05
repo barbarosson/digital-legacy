@@ -1,30 +1,43 @@
 import { eq, desc } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { trustedContacts, type NewTrustedContact } from "@/lib/db/schema";
+import {
+  decryptTrustedContactFields,
+  encryptTrustedContactInput,
+} from "@/lib/crypto/records";
 
-export async function listTrustedContacts() {
+export async function listTrustedContacts(dataKey: Buffer) {
   const db = getDb();
-  return db
+  const rows = await db
     .select()
     .from(trustedContacts)
     .orderBy(desc(trustedContacts.updatedAt));
+  return rows.map((row) => decryptTrustedContactFields(row, dataKey));
 }
 
 export async function createTrustedContact(
   input: Omit<NewTrustedContact, "id" | "createdAt" | "updatedAt">,
+  dataKey: Buffer,
 ) {
   const db = getDb();
+  const encrypted = encryptTrustedContactInput(
+    {
+      notes: input.notes,
+      handoffInstruction: input.handoffInstruction,
+    },
+    dataKey,
+  );
   const [row] = await db
     .insert(trustedContacts)
     .values({
       name: input.name.trim(),
       email: input.email?.trim() || null,
       phone: input.phone?.trim() || null,
-      notes: input.notes?.trim() || null,
-      handoffInstruction: input.handoffInstruction?.trim() || null,
+      notes: encrypted.notes,
+      handoffInstruction: encrypted.handoffInstruction,
     })
     .returning();
-  return row;
+  return decryptTrustedContactFields(row, dataKey);
 }
 
 export async function updateTrustedContact(
@@ -32,8 +45,10 @@ export async function updateTrustedContact(
   input: Partial<
     Omit<NewTrustedContact, "id" | "createdAt" | "updatedAt">
   >,
+  dataKey: Buffer,
 ) {
   const db = getDb();
+
   const [row] = await db
     .update(trustedContacts)
     .set({
@@ -45,18 +60,26 @@ export async function updateTrustedContact(
         ? { phone: input.phone?.trim() || null }
         : {}),
       ...(input.notes !== undefined
-        ? { notes: input.notes?.trim() || null }
+        ? {
+            notes: encryptTrustedContactInput(
+              { notes: input.notes },
+              dataKey,
+            ).notes,
+          }
         : {}),
       ...(input.handoffInstruction !== undefined
         ? {
-            handoffInstruction: input.handoffInstruction?.trim() || null,
+            handoffInstruction: encryptTrustedContactInput(
+              { handoffInstruction: input.handoffInstruction },
+              dataKey,
+            ).handoffInstruction,
           }
         : {}),
       updatedAt: new Date(),
     })
     .where(eq(trustedContacts.id, id))
     .returning();
-  return row ?? null;
+  return row ? decryptTrustedContactFields(row, dataKey) : null;
 }
 
 export async function deleteTrustedContact(id: number) {
