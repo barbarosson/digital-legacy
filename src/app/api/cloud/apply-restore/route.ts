@@ -55,13 +55,15 @@ export async function POST(request: Request) {
 
   try {
     const parsed = await parseVaultPlaintext(plain);
+
+    // End PIN session while the current DB handle is still open, then swap files.
+    const token = await getSessionTokenFromCookies();
+    await destroySession(token);
+
     restoreDatabaseFromBuffer(parsed.db);
     if (parsed.videos.size > 0) {
       restoreVideosFromMap(parsed.videos);
     }
-
-    const token = await getSessionTokenFromCookies();
-    await destroySession(token);
 
     return NextResponse.json({
       ok: true,

@@ -28,7 +28,14 @@ function hasAuthTables(sqlite: Database.Database): boolean {
 }
 
 export function closeCachedConnection() {
-  globalThis.__dijitalMirasSqlite?.close();
+  const sqlite = globalThis.__dijitalMirasSqlite;
+  if (sqlite) {
+    try {
+      if (sqlite.open) sqlite.close();
+    } catch {
+      // already closed / replaced on disk
+    }
+  }
   globalThis.__dijitalMirasSqlite = undefined;
   globalThis.__dijitalMirasDb = undefined;
   dbInstance = undefined;
@@ -62,7 +69,7 @@ function connectDatabase(): DbInstance {
   const cachedSqlite = globalThis.__dijitalMirasSqlite;
   const cachedDb = globalThis.__dijitalMirasDb;
 
-  if (cachedSqlite && cachedDb) {
+  if (cachedSqlite?.open && cachedDb) {
     const before = migrationCount(cachedSqlite);
     migrate(cachedDb, { migrationsFolder: MIGRATIONS_DIR });
     const after = migrationCount(cachedSqlite);
@@ -72,6 +79,8 @@ function connectDatabase(): DbInstance {
     } else {
       return cachedDb;
     }
+  } else if (cachedSqlite || cachedDb) {
+    closeCachedConnection();
   }
 
   const { sqlite, db } = openDatabase();
@@ -83,10 +92,21 @@ function connectDatabase(): DbInstance {
   return db;
 }
 
+function isLiveConnection(): boolean {
+  const sqlite = globalThis.__dijitalMirasSqlite;
+  return Boolean(sqlite?.open && globalThis.__dijitalMirasDb);
+}
+
 export function getDb(): DbInstance {
-  if (!dbInstance) {
-    dbInstance = connectDatabase();
+  // Prefer globalThis so Turbopack/Next module copies don't keep a closed handle.
+  if (isLiveConnection()) {
+    dbInstance = globalThis.__dijitalMirasDb!;
+    return dbInstance;
   }
+  if (dbInstance || globalThis.__dijitalMirasSqlite || globalThis.__dijitalMirasDb) {
+    closeCachedConnection();
+  }
+  dbInstance = connectDatabase();
   return dbInstance;
 }
 
@@ -97,7 +117,10 @@ export function reloadDatabase(): DbInstance {
 }
 
 export function checkpointDatabase() {
-  globalThis.__dijitalMirasSqlite?.pragma("wal_checkpoint(TRUNCATE)");
+  const sqlite = globalThis.__dijitalMirasSqlite;
+  if (sqlite?.open) {
+    sqlite.pragma("wal_checkpoint(TRUNCATE)");
+  }
 }
 
 export { schema };

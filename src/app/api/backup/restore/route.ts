@@ -39,10 +39,11 @@ export async function POST(request: Request) {
 
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    restoreDatabaseFromBuffer(buffer);
 
     const token = await getSessionTokenFromCookies();
     await destroySession(token);
+
+    restoreDatabaseFromBuffer(buffer);
 
     return NextResponse.json({
       ok: true,
