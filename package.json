@@ -1,6 +1,6 @@
 {
-  "name": "dijital-miras",
-  "version": "0.1.0",
+  "name": "digital-legacy",
+  "version": "1.0.0",
   "description": "Personal digital legacy planner",
   "author": "Digital Legacy",
   "private": true,
@@ -18,7 +18,9 @@
     "electron:pack": "npm run build && node scripts/prepare-electron.mjs",
     "electron:build": "npm run electron:pack && node scripts/electron-build.mjs",
     "electron:msix": "npm run electron:pack && node scripts/electron-build-msix.mjs",
-    "rebuild:node": "npm rebuild better-sqlite3"
+    "rebuild:node": "npm rebuild better-sqlite3",
+    "test:smoke": "playwright test",
+    "screenshots": "node scripts/take-screenshots.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
@@ -34,6 +36,7 @@
   },
   "devDependencies": {
     "@electron/rebuild": "^3.7.2",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",

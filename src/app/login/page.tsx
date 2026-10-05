@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { GirisClient } from "./giris-client";
+import { LoginClient } from "./login-client";
 
-export default function GirisPage() {
+export default function LoginPage() {
   return (
     <Suspense
       fallback={
@@ -10,7 +10,7 @@ export default function GirisPage() {
         </div>
       }
     >
-      <GirisClient />
+      <LoginClient />
     </Suspense>
   );
 }

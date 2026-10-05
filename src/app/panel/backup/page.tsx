@@ -130,7 +130,7 @@ export default function YedeklemePage() {
       return;
     }
 
-    router.replace("/giris?next=/panel/yedekleme");
+    router.replace("/login?next=/panel/backup");
   }
 
   return (

@@ -8,7 +8,7 @@ export async function GET() {
   const session = await requireUnlockedSession();
   if (session instanceof NextResponse) return session;
 
-  let version = "0.1.0";
+  let version = "1.0.0";
   let productName = "Digital Legacy";
   try {
     const pkg = JSON.parse(

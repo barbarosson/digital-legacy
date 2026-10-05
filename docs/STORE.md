@@ -2,7 +2,9 @@
 
 Product name stays **Digital Legacy** until a Partner Center reservation exists.
 
-## Phase 1 — Run locally (now)
+**Version:** `1.0.0` · npm package name: `digital-legacy`
+
+## Phase 1 — Run locally
 
 ```bash
 cd C:\Cursor\DigitalLegacy
@@ -12,39 +14,39 @@ npm run electron:dev
 
 Browser-only: `npm run dev` then open http://localhost:3002
 
-Community / Chat stay **off** unless `NEXT_PUBLIC_ENABLE_COMMUNITY=true` is set. Do not enable this for the first Store submission (UGC report/block is not built yet).
+Smoke tests: `npm run test:smoke`
 
-## Phase 2 — Ready before the Store account (this repo)
+Community / Chat stay **off** unless `NEXT_PUBLIC_ENABLE_COMMUNITY=true` is set. Store / MSIX builds force Community **off**. Do not enable Community for the first Store submission (UGC report/block is not built yet).
 
-Already in the repo:
+## Phase 2 — Ready before the Store account (done in repo)
 
-- English default UI and product name
-- Isolated GitHub: https://github.com/barbarosson/digital-legacy (public)
-- Phase 0 stability: Electron HTTP cookies, sealed session keys, PIN rate limit, change PIN / factory reset, About
-- **Phase 1 Pro complete (local):** cloud vault with videos + restore, trusted contact edit/encrypt/export + GDPR + handoff summary, USB banner, deadman status UI, Store IAP skeleton (demo codes off in Store builds)
-- Privacy policy: `docs/PRIVACY_POLICY.md` + public HTML: `docs/privacy/index.html`
-- App icons: `build/icon.ico`, `public/icon-256.png`, Store listing `public/store-listing-300.png`
-- Screenshots (1920×1200): `docs/screenshots/*-1920.png`
-- Electron shows an error dialog if the local server fails to start
-- NSIS desktop build: `npm run electron:build`
-- MSIX script waits for Partner Center identity: `npm run electron:msix`
+- English default UI; Turkish optional in Settings
+- English panel routes (`/login`, `/panel/assets`, …) with permanent redirects from legacy Turkish paths
+- Responsive sidebar (drawer under `lg`)
+- Electron min window 960×640; English notification titles
+- Playwright smoke suite (`tests/smoke.spec.ts`)
+- Screenshot script includes Pro Cloud scroll (`08-pro-cloud`); regenerate with `npm run screenshots` while `npm run dev` is up
+- Privacy policy + public Pages URL
+- Icons / listing assets / NSIS + MSIX scripts
+- Pro Cloud + dead-man + IAP skeleton (demo codes disabled in Store builds)
 
-Public privacy URL (live):
+Public privacy URL:
 
 - https://barbarosson.github.io/digital-legacy/privacy/
 
-Monetization (local for now):
+Monetization:
 
-- Free: core vault (PIN, assets, heirs, messages, calendar, delivery, backup)
-- Pro: trusted contacts + USB export reminders + **Pro Cloud** (encrypted backup + dead-man email)
-- Early unlock codes: `DIGITAL-LEGACY-PRO` / `DL-PRO-2026` (sideload / NSIS only)
-- Store / MSIX: `DIGITAL_LEGACY_STORE_BUILD` / `process.windowsStore` disables demo codes; IAP product id `STORE_PRO_PRODUCT_ID` (default `digital_legacy_pro`) — wire `Windows.Services.Store` in Electron when the add-on exists
-- Cloud setup: [docs/CLOUD.md](CLOUD.md)
+- Free: core vault
+- Pro: trusted contacts, USB reminders, Pro Cloud, dead-man email
+- Sideload unlock codes: `DIGITAL-LEGACY-PRO` / `DL-PRO-2026`
+- Store IAP product id: `STORE_PRO_PRODUCT_ID` (default `digital_legacy_pro`)
 
-Still needed before upload:
+Still needed before upload (Phase 3):
 
-- Partner Center developer account + app identity (Phase 3)
-- Create the Pro add-on and finish StoreContext purchase UI
+- Partner Center developer account + app identity
+- Pro add-on + StoreContext purchase UI
+- Fresh Pro Cloud screenshot if Store listing needs it
+- WACK on a clean PC
 
 ## Phase 3 — When the Store account arrives
 

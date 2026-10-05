@@ -74,7 +74,7 @@ export function SecuritySection() {
       setResetErr(data.error ?? t("settings.resetFailed"));
       return;
     }
-    router.replace("/giris");
+    router.replace("/login");
   }
 
   return (

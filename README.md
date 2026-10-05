@@ -48,7 +48,18 @@ Output is in `release/`. Installed data lives under `%APPDATA%\digital-legacy\da
 - Calendar video diary, feed, search
 - Inactivity delivery with warning phase
 - Backup / restore and GDPR ZIP export
-- Optional closed-circuit Community and chat (Supabase)
+- Pro: trusted contacts, USB reminders, encrypted cloud backup
+- Optional closed-circuit Community and chat (Supabase; off for Store v1)
+
+## Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Next.js on port 3002 |
+| `npm run electron:dev` | Desktop window |
+| `npm run electron:build` | NSIS / portable |
+| `npm run test:smoke` | Playwright smoke (starts/reuses dev server) |
+| `npm run screenshots` | Store screenshots into `docs/screenshots` |
 
 ## Stack
 

@@ -15,21 +15,21 @@ const statCards = [
   {
     key: "assets" as const,
     labelKey: "overview.assets",
-    href: "/panel/varliklar",
+    href: "/panel/assets",
     icon: Shield,
     color: "text-amber-400",
   },
   {
     key: "beneficiaries" as const,
     labelKey: "overview.beneficiaries",
-    href: "/panel/mirasclar",
+    href: "/panel/beneficiaries",
     icon: Users,
     color: "text-sky-400",
   },
   {
     key: "messages" as const,
     labelKey: "overview.messages",
-    href: "/panel/mesajlar",
+    href: "/panel/messages",
     icon: Mail,
     color: "text-rose-400",
   },
@@ -43,19 +43,19 @@ export function OverviewClient({ stats }: { stats: Stats }) {
       step: "1",
       title: t("overview.addBeneficiary"),
       description: t("beneficiaries.subtitle"),
-      href: "/panel/mirasclar",
+      href: "/panel/beneficiaries",
     },
     {
       step: "2",
       title: t("overview.addAsset"),
       description: t("assets.subtitle"),
-      href: "/panel/varliklar",
+      href: "/panel/assets",
     },
     {
       step: "3",
       title: t("overview.addMessage"),
       description: t("messages.subtitle"),
-      href: "/panel/mesajlar",
+      href: "/panel/messages",
     },
   ];
 

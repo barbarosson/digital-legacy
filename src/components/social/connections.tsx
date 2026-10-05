@@ -222,7 +222,7 @@ export function Connections() {
               type="button"
               size="sm"
               onClick={() =>
-                router.push(`/panel/sohbet?u=${row.other?.id ?? ""}`)
+                router.push(`/panel/chat?u=${row.other?.id ?? ""}`)
               }
             >
               <MessageCircle className="h-4 w-4" />

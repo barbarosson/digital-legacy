@@ -66,6 +66,11 @@ function buildServerEnv(port) {
     COOKIE_SECURE: "false",
     // Store packages must not accept demo unlock codes.
     DIGITAL_LEGACY_STORE_BUILD: storeBuild ? "true" : "false",
+    // Store v1: Community stays off until report/block exists.
+    NEXT_PUBLIC_ENABLE_COMMUNITY:
+      process.env.NEXT_PUBLIC_ENABLE_COMMUNITY === "true" && !storeBuild
+        ? "true"
+        : "false",
   };
 }
 

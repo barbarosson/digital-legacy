@@ -35,7 +35,7 @@ await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded", timeout: 60_000 });
 await page.waitForTimeout(1000);
 await saveShot(page, "01-landing");
 
-await page.goto(`${BASE}/giris`, { waitUntil: "domcontentloaded", timeout: 30_000 });
+await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded", timeout: 30_000 });
 await page.waitForSelector("input[type=password]", { timeout: 15_000 });
 await page.waitForTimeout(600);
 await saveShot(page, "02-pin");
@@ -58,19 +58,25 @@ await page.waitForTimeout(1200);
 
 const panelPages = [
   { name: "03-overview", url: "/panel" },
-  { name: "04-calendar", url: "/panel/takvim" },
-  { name: "05-assets", url: "/panel/varliklar" },
-  { name: "06-messages", url: "/panel/mesajlar" },
-  { name: "07-settings", url: "/panel/ayarlar" },
+  { name: "04-calendar", url: "/panel/calendar" },
+  { name: "05-assets", url: "/panel/assets" },
+  { name: "06-messages", url: "/panel/messages" },
+  { name: "07-settings", url: "/panel/settings" },
+  { name: "08-pro-cloud", url: "/panel/settings" },
 ];
 
 for (const { name, url } of panelPages) {
   try {
     await page.goto(`${BASE}${url}`, { waitUntil: "domcontentloaded", timeout: 30_000 });
     await page.waitForTimeout(900);
-    if (page.url().includes("/giris")) {
+    if (page.url().includes("/login") || page.url().includes("/giris")) {
       console.warn("  ✗", name, "(still locked)");
       continue;
+    }
+    if (name === "08-pro-cloud") {
+      const pro = page.getByText(/Pro Cloud|Digital Legacy Pro/i).first();
+      await pro.scrollIntoViewIfNeeded().catch(() => {});
+      await page.waitForTimeout(500);
     }
     await saveShot(page, name);
   } catch (e) {

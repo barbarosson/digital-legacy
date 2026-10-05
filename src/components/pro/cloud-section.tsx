@@ -359,7 +359,7 @@ export function CloudSection({
         throw new Error(j.error ?? t("cloud.restoreFailed"));
       }
       setMsg(t("cloud.restoreOk"));
-      window.location.href = "/giris?next=/panel/ayarlar";
+      window.location.href = "/login?next=/panel/settings";
     } catch (err) {
       setMsg(err instanceof Error ? err.message : t("cloud.restoreFailed"));
       setBusy(false);

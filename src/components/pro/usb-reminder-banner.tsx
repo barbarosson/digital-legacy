@@ -70,7 +70,7 @@ export function UsbReminderBanner() {
         {message && <p className="mt-1 text-amber-100/80">{message}</p>}
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
-            href="/panel/yedekleme"
+            href="/panel/backup"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-3 py-1.5 text-sm font-medium text-black shadow-lg shadow-amber-500/20 hover:bg-amber-400"
           >
             {t("pro.usbBannerCta")}

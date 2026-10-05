@@ -14,7 +14,7 @@ type AuthStatus = {
   unlocked: boolean;
 };
 
-export function GirisClient() {
+export function LoginClient() {
   const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();

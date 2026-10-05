@@ -53,7 +53,7 @@ export default function HomePage() {
           >
             {t("settings.privacyTitle")}
           </Link>
-          <Link href="/giris">
+          <Link href="/login">
             <Button variant="secondary" size="sm">
               {t("landing.cta")}
             </Button>
@@ -73,7 +73,7 @@ export default function HomePage() {
             {t("landing.subtitle")}
           </p>
           <div className="mt-10 flex flex-wrap gap-4">
-            <Link href="/giris">
+            <Link href="/login">
               <Button size="lg">
                 {t("landing.cta")}
                 <ArrowRight className="h-4 w-4" />
