@@ -72,26 +72,30 @@ Options:
 2. Supabase Dashboard → Edge Functions → deadman-check → Schedules
 3. External cron with the same POST
 
-Linked project (app `.env.local`): `https://itvrvouaxcutpetyzhvg.supabase.co`
+**Dedicated project (Faz 2 / Store):** create and point `.env.local` at the new project — see [FAZ2_SUPABASE.md](./FAZ2_SUPABASE.md).  
+Legacy shared project (transition only): `https://itvrvouaxcutpetyzhvg.supabase.co`
+
+GitHub Actions cron uses secret `DIGITAL_LEGACY_SUPABASE_URL` (project URL, no trailing slash). Falls back to the legacy URL until that secret is set.
 
 Response includes `mailProvider` so you can confirm which backend ran.
 
 ### Ops checklist
 
-1. Deploy function: `deadman-check` (MCP / `supabase functions deploy deadman-check`) — **done on linked project**
+1. Deploy function: `deadman-check` on the **dedicated** Digital Legacy project
 2. Set **matching** `DEADMAN_CRON_SECRET` in:
-   - Supabase → Project Settings → Edge Functions → Secrets
-   - GitHub repo secret `DEADMAN_CRON_SECRET` (Actions cron) — **GitHub side set**
+   - Supabase → Project Settings → Edge Functions → Secrets (new project)
+   - GitHub repo secret `DEADMAN_CRON_SECRET`
    - Local copy (gitignored): `.env.deadman.local`
-3. Optional mail: `RESEND_API_KEY` (+ `RESEND_FROM`) or SES keys; without them `MAIL_PROVIDER` stays **off** (status still advances, no email)
-4. Enable dead-man in the app (Pro Cloud) and save heir emails
-5. Check in once so `last_checkin_at` is fresh
-6. Trigger Actions workflow **Dead-man cron** once (or POST the function); expect `checked` ≥ 1 when enabled
-7. In the app UI, the Pro Cloud section shows days until warning / heir alert
+3. Set GitHub secret `DIGITAL_LEGACY_SUPABASE_URL` = `https://<ref>.supabase.co`
+4. Optional mail: `RESEND_API_KEY` (+ `RESEND_FROM`) or SES keys; without them `MAIL_PROVIDER` stays **off**
+5. Enable dead-man in the app (Pro Cloud) and save heir emails
+6. Check in once so `last_checkin_at` is fresh
+7. Trigger Actions workflow **Dead-man cron** once; expect `checked` ≥ 1 when enabled
+8. In the app UI, the Pro Cloud section shows days until warning / heir alert
 
 ### Auth note
 
-Pro Cloud sign-up uses this project’s Auth. If email confirmation is required in Dashboard → Authentication, confirm the inbox before Sign in works.
+Pro Cloud sign-up uses **this product’s** Supabase Auth. Prefer Custom SMTP (Resend) on the dedicated project so confirmation mail is reliable. Confirm email should stay ON for Store.
 
 ## SQL
 

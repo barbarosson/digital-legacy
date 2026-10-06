@@ -39,8 +39,11 @@ Public URLs (GitHub Pages — no separate marketing site):
 
 - Site root: https://barbarosson.github.io/digital-legacy/
 - Privacy (paste in Partner Center): https://barbarosson.github.io/digital-legacy/privacy/
+- Marketing (MODULUS): https://modulusaas.com/products/digital-legacy
 
 Pages deploys from the `docs/` folder on push to `main` (`.github/workflows/pages.yml`). In the repo **Settings → Pages**, source must be **GitHub Actions** (one-time).
+
+**Pro Cloud backend (Store):** dedicated Supabase project — [docs/FAZ2_SUPABASE.md](./FAZ2_SUPABASE.md). Do not point production builds at the shared Modulus ERP project.
 
 Monetization:
 
