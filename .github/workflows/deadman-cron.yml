@@ -15,16 +15,21 @@ jobs:
       - name: Invoke deadman-check
         env:
           DEADMAN_CRON_SECRET: ${{ secrets.DEADMAN_CRON_SECRET }}
+          # Dedicated Digital Legacy project (Faz 2). Fallback kept for transition.
+          DIGITAL_LEGACY_SUPABASE_URL: ${{ secrets.DIGITAL_LEGACY_SUPABASE_URL }}
         run: |
           set -euo pipefail
           if [ -z "${DEADMAN_CRON_SECRET:-}" ]; then
             echo "Missing GitHub secret DEADMAN_CRON_SECRET"
             exit 1
           fi
+          BASE_URL="${DIGITAL_LEGACY_SUPABASE_URL:-https://itvrvouaxcutpetyzhvg.supabase.co}"
+          BASE_URL="${BASE_URL%/}"
           CODE=$(curl -sS -o /tmp/deadman.json -w "%{http_code}" \
-            -X POST "https://itvrvouaxcutpetyzhvg.supabase.co/functions/v1/deadman-check" \
+            -X POST "${BASE_URL}/functions/v1/deadman-check" \
             -H "Content-Type: application/json" \
             -H "x-deadman-secret: ${DEADMAN_CRON_SECRET}")
+          echo "URL ${BASE_URL}/functions/v1/deadman-check"
           echo "HTTP $CODE"
           cat /tmp/deadman.json
           test "$CODE" = "200"
